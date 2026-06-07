@@ -13,7 +13,6 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        // Konfigurasi Tailwind untuk mendukung Class-based Dark Mode
         tailwind.config = {
             darkMode: 'class'
         }
@@ -31,7 +30,6 @@
             transition: background-color 0.3s ease;
         }
         
-        /* Custom Container & Scrollbar */
         .app-container {
             height: 100vh;
             overflow-y: auto;
@@ -44,16 +42,13 @@
         .app-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         .app-container::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
-        /* Dark mode scrollbar adjustment */
         .dark .app-container::-webkit-scrollbar-track { background: #1f2937; }
         .dark .app-container::-webkit-scrollbar-thumb { background: #4b5563; }
 
-        /* Brand Colors */
         .brand-red { background-color: #EE414B !important; color: white; }
         .text-brand-red { color: #EE414B !important; }
         .border-brand-red { border-color: #EE414B !important; }
 
-        /* Animations */
         @keyframes pulse-fast {
             0%, 100% { opacity: 1; }
             50% { opacity: .4; }
