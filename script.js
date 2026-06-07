@@ -34,7 +34,7 @@ const IconDatabase = () => <svg xmlns="http://www.w3.org/2000/svg" width="32" he
 const IconShare2 = () => <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>;
 const IconSun = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M6.34 17.66l-1.41 1.41"/><path d="M19.07 4.93l-1.41 1.41"/></svg>;
 const IconMoon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>;
-const IconTable = () => <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3v18"/><path d="M3 12h18"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg>;
+const IconTable = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3v18"/><path d="M3 12h18"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg>;
 const IconExternalLink = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>;
 
 // 2. MAIN APP COMPONENT
@@ -54,7 +54,6 @@ const App = () => {
 
     const timerRef = useRef(null);
 
-    // Tautan iFrame GSheet Terpublikasi
     const spreadsheetEmbedUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRFr1dH2Y34-ZSSxN-Ycasseqx4a_kU8Pja9dQeShIA6la4X5BVQo-JiSCcdZ3k7X8SXxJ8OhVr48d0/pubhtml?gid=0&single=true";
 
     // Fetch Data
@@ -77,7 +76,6 @@ const App = () => {
                 setModules(processedModules);
                 setSchedule(processedSchedule);
 
-                // Mengambil data terimport dari window.DATA_PESERTA (peserta.js)
                 if (window.DATA_PESERTA) {
                     setPesertaList(window.DATA_PESERTA);
                 }
@@ -175,24 +173,17 @@ const App = () => {
 
     return (
         <div className="app-container">
-            {/* HEADER */}
-            <header className="sticky top-0 z-50 brand-red shadow-lg w-full px-4 sm:px-12 py-3">
-                <div className="w-full flex justify-between items-center relative">
-                    <div className="flex items-center z-10">
+            {/* HEADER (Batas samping mengikuti konten utama) */}
+            <header className="sticky top-0 z-50 brand-red shadow-lg w-full">
+                <div className="max-w-6xl mx-auto px-6 py-3 flex justify-between items-center">
+                    <div className="flex items-center">
                         <button onClick={() => setView('dashboard')} className="hover:opacity-90 transition-opacity focus:outline-none">
                             <LogoGDT className="h-14 sm:h-16 w-auto text-white" />
                         </button>
                     </div>
                     
-                    {/* JUDUL DI CENTER TENGAH */}
-                    <div className="absolute inset-0 hidden sm:flex items-center justify-center pointer-events-none">
-                        <h2 className="text-white text-lg sm:text-2xl font-black tracking-wider uppercase pointer-events-auto">
-                            {config.headline || "Portal Utama"}
-                        </h2>
-                    </div>
-                    
                     {/* Panel Kontrol Sisi Kanan */}
-                    <div className="flex items-center gap-3 z-10">
+                    <div className="flex items-center gap-3">
                         <button 
                             onClick={toggleDarkMode} 
                             className="p-2.5 bg-white bg-opacity-10 hover:bg-opacity-20 text-white rounded-xl transition-all border border-white border-opacity-10"
@@ -214,13 +205,16 @@ const App = () => {
             {/* MAIN CONTENT */}
             <main className="flex-grow max-w-6xl w-full mx-auto px-6 py-10 pb-16">
                 
+                {/* JUDUL UTAMA (DI KELUARKAN DARI HEADER & BERADA DI TENGAH KONTEN) */}
+                <div className="text-center mb-8">
+                    <h1 className="text-2xl sm:text-4xl font-black tracking-wider uppercase text-gray-800 dark:text-white">
+                        {config.headline || "Portal Utama"}
+                    </h1>
+                </div>
+
                 {/* VIEW: DASHBOARD */}
                 {view === 'dashboard' && (
                     <div className="space-y-12 animate-fade-in">
-                        <div className="text-center sm:hidden">
-                            <h2 className="text-2xl font-extrabold text-gray-800 dark:text-gray-100">{config.headline}</h2>
-                        </div>
-
                         {/* KOTAK TIMER */}
                         <div 
                             ref={timerRef}
@@ -272,58 +266,64 @@ const App = () => {
                             </div>
                         </div>
 
-                        {/* Menu Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-                            <button onClick={() => setView('modules')} className="group bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col items-center justify-center gap-4 border border-gray-100 dark:border-gray-800">
-                                <div className="w-14 h-14 rounded-full bg-red-50 dark:bg-red-950/30 text-brand-red flex items-center justify-center group-hover:scale-110 transition-transform"><IconFileText /></div>
-                                <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">Akses Modul</h3>
+                        {/* Menu Grid (Cuma 4 Tombol Sesuai Kebutuhan Baru) */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                            <button onClick={() => setView('modules')} className="group bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col items-center justify-center gap-4 border border-gray-100 dark:border-gray-800">
+                                <div className="w-16 h-16 rounded-full bg-red-50 dark:bg-red-950/30 text-brand-red flex items-center justify-center group-hover:scale-110 transition-transform"><IconFileText /></div>
+                                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">Akses Modul</h3>
                             </button>
                             
-                            <button onClick={() => setView('schedule')} className="group bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col items-center justify-center gap-4 border border-gray-100 dark:border-gray-800">
-                                <div className="w-14 h-14 rounded-full bg-red-50 dark:bg-red-950/30 text-brand-red flex items-center justify-center group-hover:scale-110 transition-transform"><IconCalendar /></div>
-                                <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">Jadwal Kompetisi</h3>
+                            <button onClick={() => setView('schedule')} className="group bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col items-center justify-center gap-4 border border-gray-100 dark:border-gray-800">
+                                <div className="w-16 h-16 rounded-full bg-red-50 dark:bg-red-950/30 text-brand-red flex items-center justify-center group-hover:scale-110 transition-transform"><IconCalendar /></div>
+                                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">Jadwal Kompetisi</h3>
                             </button>
 
-                            <button onClick={() => setView('spreadsheet')} className="group bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col items-center justify-center gap-4 border border-gray-100 dark:border-gray-800">
-                                <div className="w-14 h-14 rounded-full bg-red-50 dark:bg-red-950/30 text-brand-red flex items-center justify-center group-hover:scale-110 transition-transform"><IconTable /></div>
-                                <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">Live Spreadsheet</h3>
-                            </button>
-
-                            <button onClick={() => setView('submission')} className="group bg-white p-6 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col items-center justify-center gap-4 border border-gray-100 dark:border-gray-900 text-center">
-                                <div className="w-14 h-14 rounded-full bg-red-50 dark:bg-red-950/30 text-brand-red flex items-center justify-center group-hover:scale-110 transition-transform"><IconShare2 /></div>
-                                <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">Link Pengumpulan</h3>
+                            <button onClick={() => setView('submission')} className="group bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col items-center justify-center gap-4 border border-gray-100 dark:border-gray-800 text-center">
+                                <div className="w-16 h-16 rounded-full bg-red-50 dark:bg-red-950/30 text-brand-red flex items-center justify-center group-hover:scale-110 transition-transform"><IconShare2 /></div>
+                                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">Folder Pengumpulan</h3>
                             </button>
                             
-                            <a href={config.docLink} target="_blank" rel="noreferrer" className="group bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col items-center justify-center gap-4 border border-gray-100 dark:border-gray-800 text-center">
-                                <div className="w-14 h-14 rounded-full bg-red-50 dark:bg-red-950/30 text-brand-red flex items-center justify-center group-hover:scale-110 transition-transform"><IconDatabase /></div>
-                                <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">Dokumentasi</h3>
+                            <a href={config.docLink} target="_blank" rel="noreferrer" className="group bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col items-center justify-center gap-4 border border-gray-100 dark:border-gray-800 text-center">
+                                <div className="w-16 h-16 rounded-full bg-red-50 dark:bg-red-950/30 text-brand-red flex items-center justify-center group-hover:scale-110 transition-transform"><IconDatabase /></div>
+                                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">Dokumentasi</h3>
                             </a>
                         </div>
                     </div>
                 )}
 
-                {/* VIEW: LINK PENGUMPULAN TABEL DINAMIS */}
+                {/* VIEW: FOLDER PENGUMPULAN & SPREADSHEET DI DALAMNYA */}
                 {view === 'submission' && (
-                    <div className="max-w-4xl mx-auto animate-fade-in">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                    <div className="max-w-4xl mx-auto animate-fade-in space-y-12">
+                        {/* Judul & Header Section */}
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                             <div className="flex items-center gap-4">
                                 <div className="w-12 h-12 rounded-xl brand-red flex items-center justify-center shadow-md"><IconShare2 /></div>
                                 <div>
-                                    <h2 className="text-3xl font-extrabold text-gray-800 dark:text-gray-100">Folder Pengumpulan</h2>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400">Silakan pilih folder drive pengumpulan tugas berdasarkan nomor peserta.</p>
+                                    <h2 className="text-3xl font-extrabold text-gray-800 dark:text-gray-100">Folder Pengumpulan & Live Data</h2>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400">Silakan kumpulkan tugas dan pantau data rekap nilai di bawah.</p>
                                 </div>
                             </div>
-                            <div className="relative">
+                            
+                            {/* Filter Input & Tombol Lompat ke Spreadsheet */}
+                            <div className="flex flex-wrap items-center gap-3">
                                 <input 
                                     type="text" 
                                     placeholder="Cari No / Nama..." 
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full sm:w-64 px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+                                    className="px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm w-full sm:w-48"
                                 />
+                                <a 
+                                    href="#live-monitoring-sheet" 
+                                    className="bg-gray-800 dark:bg-gray-700 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-gray-700 flex items-center gap-2 transition-all"
+                                >
+                                    <IconTable />
+                                    <span>Lihat Live Sheet</span>
+                                </a>
                             </div>
                         </div>
 
+                        {/* Tabel Peserta & Link Drive */}
                         <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left border-collapse">
@@ -364,26 +364,26 @@ const App = () => {
                                 </table>
                             </div>
                         </div>
-                    </div>
-                )}
 
-                {/* VIEW: LIVE SPREADSHEET */}
-                {view === 'spreadsheet' && (
-                    <div className="max-w-5xl mx-auto w-full h-full flex flex-col animate-fade-in">
-                        <div className="flex items-center gap-4 mb-6">
-                            <div className="w-11 h-11 rounded-xl brand-red flex items-center justify-center"><IconTable /></div>
-                            <div>
-                                <h2 className="text-2xl font-extrabold text-gray-800 dark:text-gray-100">Live Monitoring Data</h2>
-                                <p className="text-sm text-gray-500 dark:text-gray-400">Sinkronisasi otomatis dari Google Spreadsheet panitia.</p>
+                        {/* LIVE SPREADSHEET (Sesuai instruksi penempatan baru) */}
+                        <div id="live-monitoring-sheet" className="pt-6 border-t border-gray-200 dark:border-gray-800">
+                            <div className="flex items-center gap-4 mb-4">
+                                <div className="w-10 h-10 rounded-xl bg-green-500/10 text-green-500 flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">Live Monitoring Sheet</h3>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">Sinkronisasi otomatis real-time dari pusat data utama.</p>
+                                </div>
                             </div>
-                        </div>
-                        <div className="bg-white dark:bg-gray-900 p-2 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-800 overflow-hidden w-full h-[650px]">
-                            <iframe 
-                                src={spreadsheetEmbedUrl} 
-                                className="w-full h-full border-0 rounded-xl bg-white" 
-                                allowFullScreen
-                                loading="lazy"
-                            ></iframe>
+                            <div className="bg-white dark:bg-gray-900 p-2 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-800 overflow-hidden w-full h-[600px]">
+                                <iframe 
+                                    src={spreadsheetEmbedUrl} 
+                                    className="w-full h-full border-0 rounded-xl bg-white" 
+                                    allowFullScreen
+                                    loading="lazy"
+                                ></iframe>
+                            </div>
                         </div>
                     </div>
                 )}
