@@ -12,6 +12,12 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,900&display=swap" rel="stylesheet">
     
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Konfigurasi Tailwind untuk mendukung Class-based Dark Mode
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
     
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -22,7 +28,7 @@
         body {
             font-family: 'DM Sans', sans-serif;
             overflow-y: hidden;
-            background-color: #f3f4f6;
+            transition: background-color 0.3s ease;
         }
         
         /* Custom Container & Scrollbar */
@@ -37,6 +43,10 @@
         .app-container::-webkit-scrollbar-track { background: #f1f1f1; }
         .app-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         .app-container::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Dark mode scrollbar adjustment */
+        .dark .app-container::-webkit-scrollbar-track { background: #1f2937; }
+        .dark .app-container::-webkit-scrollbar-thumb { background: #4b5563; }
 
         /* Brand Colors */
         .brand-red { background-color: #EE414B !important; color: white; }
@@ -54,15 +64,18 @@
         
         @keyframes border-glow {
             0%, 100% { border-color: #EE414B; box-shadow: 0 0 15px rgba(238, 65, 75, 0.2); }
-            50% { border-color: #ef4444; box-shadow: 0 0 25px rgba(239, 68, 68, 0.6); }
+            50% { border-color: #ef4444; box-shadow: 0 0 25px rgba(239, 68, 68, 0.5); }
         }
         .schedule-highlight {
             animation: border-glow 2s infinite;
             background-color: #fef2f2 !important;
         }
+        .dark .schedule-highlight {
+            background-color: rgba(238, 65, 75, 0.15) !important;
+        }
     </style>
 </head>
-<body>
+<body class="bg-gray-100 dark:bg-gray-950 text-gray-900 dark:text-gray-100">
     <div id="root"></div>
 
     <script type="text/babel" src="script.js"></script>
