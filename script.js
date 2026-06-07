@@ -1,6 +1,6 @@
 const { useState, useEffect, useMemo, useRef } = React;
 
-// 1. SVG ICON COMPONENTS
+// 1. SVG COMPONENTS
 const LogoGDT = ({ className }) => (
     <svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 678.2 437.6" className={className}>
         <g id="d"><path fill="currentColor" d="M580.57,405.99c-18.54,0-32-16.25-32-38.63v-.28c0-22.87,13.34-39.48,31.71-39.48,11.56,0,17.75,5.15,22.27,10.19l2.07,2.31v-32.14c0-2.49,2.02-4.51,4.51-4.51h20.66c2.49,0,4.51,2.02,4.51,4.51v91.68c0,2.49-2.02,4.51-4.51,4.51h-20.66c-2.49,0-4.51-2.02-4.51-4.51v-6.79l-2.06,2.22c-5.32,5.75-11.01,10.91-22,10.91ZM591.3,351.64c-7.87,0-14.03,6.6-14.03,15.02v.28c0,8.42,6.16,15.02,14.03,15.02s14.03-6.6,14.03-15.02v-.28c0-8.42-6.17-15.02-14.03-15.02Z"/></g>
@@ -23,6 +23,7 @@ const LogoGDT = ({ className }) => (
     </svg>
 );
 
+const IconHome = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>;
 const IconMaximize = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>;
 const IconMinimize = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg>;
 const IconLock = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>;
@@ -34,11 +35,11 @@ const IconShare2 = () => <svg xmlns="http://www.w3.org/2000/svg" width="32" heig
 
 // 2. MAIN APP COMPONENT
 const App = () => {
-    // STATE
     const [loading, setLoading] = useState(true);
     const [view, setView] = useState('dashboard');
     const [currentTime, setCurrentTime] = useState(new Date());
     const [isFullscreen, setIsFullscreen] = useState(false);
+    const [timerScale, setTimerScale] = useState(1.0); // Fitur skala ukuran timer
     
     const [config, setConfig] = useState({ headline: "", docLink: "", submissionLink: "" });
     const [modules, setModules] = useState([]);
@@ -46,7 +47,7 @@ const App = () => {
 
     const timerRef = useRef(null);
 
-    // EFFECT: Fetch Data from data.json
+    // Fetch Data
     useEffect(() => {
         fetch('data.json')
             .then(response => response.json())
@@ -68,12 +69,12 @@ const App = () => {
                 setLoading(false);
             })
             .catch(error => {
-                console.error("Gagal menarik data.json:", error);
+                console.error("Gagal menarik data:", error);
                 setLoading(false);
             });
     }, []);
 
-    // EFFECT: Real-time clock (1 sec tick)
+    // Real-time Clock
     useEffect(() => {
         const timer = setInterval(() => {
             setCurrentTime(new Date());
@@ -81,10 +82,11 @@ const App = () => {
         return () => clearInterval(timer);
     }, []);
 
-    // EFFECT: Monitor Fullscreen Status
+    // Fullscreen Event Listener
     useEffect(() => {
         const handleFsChange = () => {
             setIsFullscreen(!!document.fullscreenElement);
+            if (!document.fullscreenElement) setTimerScale(1.0); // Reset skala jika keluar fullscreen
         };
         document.addEventListener('fullscreenchange', handleFsChange);
         return () => document.removeEventListener('fullscreenchange', handleFsChange);
@@ -92,19 +94,17 @@ const App = () => {
 
     const toggleFullScreen = () => {
         if (!document.fullscreenElement) {
-            if (timerRef.current) {
-                timerRef.current.requestFullscreen().catch(err => {
-                    console.error(`Gagal masuk ke mode fullscreen: ${err.message}`);
-                });
-            }
+            timerRef.current.requestFullscreen().catch(err => console.error(err));
         } else {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            }
+            document.exitFullscreen();
         }
     };
 
-    // LOGIC: Countdown & Status
+    // Fungsi zoom timer
+    const zoomIn = () => setTimerScale(prev => Math.min(prev + 0.1, 2.0));
+    const zoomOut = () => setTimerScale(prev => Math.max(prev - 0.1, 0.6));
+
+    // Logic Event
     const { activeEvent, nextEvent } = useMemo(() => {
         let active = null;
         let next = null;
@@ -122,7 +122,6 @@ const App = () => {
     }, [currentTime, schedule]);
 
     const countdownTarget = activeEvent ? activeEvent.end : (nextEvent ? nextEvent.start : null);
-    
     const timeDiff = countdownTarget ? countdownTarget.getTime() - currentTime.getTime() : 0;
     const isFinished = !activeEvent && !nextEvent && schedule.length > 0;
 
@@ -132,7 +131,6 @@ const App = () => {
 
     const pad = (num) => String(num).padStart(2, '0');
 
-    // RENDERING
     if (loading) {
         return (
             <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
@@ -144,92 +142,92 @@ const App = () => {
 
     return (
         <div className="app-container">
-            {/* HEADER */}
-            <header className="sticky top-0 z-50 brand-red shadow-lg">
-                <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-                    <button 
-                        onClick={() => setView('dashboard')} 
-                        className="hover:opacity-80 transition-opacity focus:outline-none"
-                        title="Kembali ke Dashboard"
-                    >
-                        <LogoGDT className="h-10 w-auto text-white" />
+            {/* HEADER LEBAR SEKALIAN & LOGO SEJAJAR */}
+            <header className="sticky top-0 z-50 brand-red shadow-lg w-full px-4 sm:px-12 py-3">
+                <div className="w-full flex justify-between items-center">
+                    <div className="flex items-center gap-6">
+                        <button onClick={() => setView('dashboard')} className="hover:opacity-90 transition-opacity focus:outline-none">
+                            <LogoGDT className="h-14 sm:h-16 w-auto text-white" />
+                        </button>
+                        <div className="h-8 w-[2px] bg-white bg-opacity-30 hidden sm:block"></div>
+                        <h2 className="text-white text-base sm:text-xl font-black tracking-wide hidden sm:block uppercase">
+                            {config.headline || "Portal Utama"}
+                        </h2>
+                    </div>
+                    
+                    {/* TOMBOL HOME TAMBAHAN KANAN */}
+                    <button onClick={() => setView('dashboard')} className="p-2.5 hover:bg-white hover:bg-opacity-20 rounded-xl transition-all flex items-center gap-2 font-bold text-sm uppercase tracking-wider border border-white border-opacity-20">
+                        <IconHome />
+                        <span className="hidden md:inline">Home</span>
                     </button>
-                    {/* Tulisan gdtlab.id dan tombol home kanan dihilangkan sesuai request karena logo menjadi tombol home */}
                 </div>
             </header>
 
             {/* MAIN CONTENT */}
-            <main className="max-w-6xl mx-auto px-6 py-10 pb-20">
+            <main className="flex-grow max-w-6xl w-full mx-auto px-6 py-10 pb-16">
                 
                 {/* VIEW: DASHBOARD */}
                 {view === 'dashboard' && (
                     <div className="space-y-12 animate-fade-in">
-                        <div className="text-center space-y-4">
-                            <h2 className="text-4xl md:text-5xl font-extrabold text-gray-800 tracking-tight leading-tight">
-                                {config.headline}
-                            </h2>
+                        {/* Headline Teks Mobile Only */}
+                        <div className="text-center sm:hidden">
+                            <h2 className="text-2xl font-extrabold text-gray-800">{config.headline}</h2>
                         </div>
 
-                        {/* KOTAK TIMER */}
+                        {/* KOTAK TIMER DENGAN FITUR PERBESAR / PERKECIL */}
                         <div 
                             ref={timerRef}
-                            className={`bg-white shadow-xl max-w-4xl mx-auto text-center border border-gray-100 relative transition-all ${
+                            className={`bg-white shadow-xl max-w-4xl mx-auto text-center border border-gray-100 relative transition-all duration-300 ${
                                 isFullscreen 
                                 ? 'flex flex-col items-center justify-center w-full h-full p-12 m-0 max-w-none rounded-none' 
                                 : 'rounded-3xl p-8'
                             }`}
                         >
-                            <button 
-                                onClick={toggleFullScreen} 
-                                className="absolute top-4 right-4 p-2 text-gray-300 hover:text-gray-600 transition-colors focus:outline-none"
-                                title={isFullscreen ? "Keluar Layar Penuh" : "Layar Penuh"}
-                            >
-                                {isFullscreen ? <IconMinimize /> : <IconMaximize />}
-                            </button>
+                            {/* Toolbar Kontrol Kanan Atas */}
+                            <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-gray-50 p-1 rounded-xl border border-gray-200 z-10">
+                                <button onClick={zoomOut} className="w-8 h-8 font-black text-gray-500 hover:bg-gray-200 rounded-lg flex items-center justify-center text-lg transition-colors focus:outline-none" title="Perkecil Ukuran">-</button>
+                                <span className="text-xs text-gray-400 font-bold px-1">{Math.round(timerScale * 100)}%</span>
+                                <button onClick={zoomIn} className="w-8 h-8 font-black text-gray-500 hover:bg-gray-200 rounded-lg flex items-center justify-center text-lg transition-colors focus:outline-none" title="Perbesar Ukuran">+</button>
+                                <div className="w-[1px] h-5 bg-gray-300 mx-1"></div>
+                                <button onClick={toggleFullScreen} className="w-8 h-8 text-gray-500 hover:bg-gray-200 rounded-lg flex items-center justify-center transition-colors focus:outline-none" title={isFullscreen ? "Keluar Layar Penuh" : "Layar Penuh"}>
+                                    {isFullscreen ? <IconMinimize /> : <IconMaximize />}
+                                </button>
+                            </div>
 
-                            {isFinished ? (
-                                <div className={`inline-flex items-center gap-2 px-6 py-2 bg-gray-200 text-gray-700 rounded-full font-bold mb-6 ${isFullscreen ? 'text-2xl mb-12' : ''}`}>
-                                    Seluruh Agenda Selesai
-                                </div>
-                            ) : (
-                                <div className={`inline-flex items-center gap-2 px-6 py-2 rounded-full font-bold mb-8 shadow-sm ${
-                                    activeEvent ? "bg-green-100 text-green-700 border border-green-200 animate-pulse-fast" : "bg-blue-100 text-blue-700 border border-blue-200"
-                                } ${isFullscreen ? 'text-2xl px-10 py-4 mb-16' : ''}`}>
-                                    <span className="w-3 h-3 rounded-full bg-current"></span>
-                                    {activeEvent ? `SEDANG BERLANGSUNG: ${activeEvent.title}` : `Agenda Berikutnya: ${nextEvent?.title || 'Menunggu Jadwal'}`}
-                                </div>
-                            )}
+                            <div style={{ transform: `scale(${timerScale})`, transformOrigin: 'center' }} className="transition-transform duration-200 my-4">
+                                {isFinished ? (
+                                    <div className="inline-flex items-center gap-2 px-6 py-2 bg-gray-200 text-gray-700 rounded-full font-bold mb-6">
+                                        Seluruh Agenda Selesai
+                                    </div>
+                                ) : (
+                                    <div className={`inline-flex items-center gap-2 px-6 py-2 rounded-full font-bold mb-8 shadow-sm ${
+                                        activeEvent ? "bg-green-100 text-green-700 border border-green-200 animate-pulse-fast" : "bg-blue-100 text-blue-700 border border-blue-200"
+                                    }`}>
+                                        <span className="w-3 h-3 rounded-full bg-current"></span>
+                                        {activeEvent ? `SEDANG BERLANGSUNG: ${activeEvent.title}` : `Agenda Berikutnya: ${nextEvent?.title || 'Menunggu Jadwal'}`}
+                                    </div>
+                                )}
 
-                            <div className="flex justify-center items-center gap-4 sm:gap-6">
-                                <div className="flex flex-col items-center">
-                                    <div className={`bg-gray-900 text-white flex items-center justify-center rounded-xl font-black shadow-inner ${
-                                        isFullscreen ? 'w-40 h-48 text-8xl' : 'w-20 h-24 sm:w-28 sm:h-32 text-4xl sm:text-6xl'
-                                    }`}>
-                                        {pad(hours)}
+                                <div className="flex justify-center items-center gap-4 sm:gap-6">
+                                    <div className="flex flex-col items-center">
+                                        <div className="bg-gray-900 text-white w-20 h-24 sm:w-28 sm:h-32 flex items-center justify-center rounded-xl text-4xl sm:text-6xl font-black shadow-inner">{pad(hours)}</div>
+                                        <span className="text-gray-500 font-bold mt-3 text-xs uppercase tracking-widest">Jam</span>
                                     </div>
-                                    <span className={`text-gray-500 font-bold mt-3 uppercase tracking-widest ${isFullscreen ? 'text-xl' : 'text-sm sm:text-base'}`}>Jam</span>
-                                </div>
-                                <div className={`font-black text-gray-300 -mt-8 ${isFullscreen ? 'text-8xl' : 'text-4xl sm:text-6xl'}`}>:</div>
-                                <div className="flex flex-col items-center">
-                                    <div className={`brand-red flex items-center justify-center rounded-xl font-black shadow-lg ring-4 ring-red-100 ${
-                                        isFullscreen ? 'w-40 h-48 text-8xl' : 'w-20 h-24 sm:w-28 sm:h-32 text-4xl sm:text-6xl'
-                                    }`}>
-                                        {pad(minutes)}
+                                    <div className="text-4xl sm:text-6xl font-black text-gray-300 -mt-8">:</div>
+                                    <div className="flex flex-col items-center">
+                                        <div className="brand-red w-20 h-24 sm:w-28 sm:h-32 flex items-center justify-center rounded-xl text-4xl sm:text-6xl font-black shadow-lg ring-4 ring-red-100">{pad(minutes)}</div>
+                                        <span className="text-gray-500 font-bold mt-3 text-xs uppercase tracking-widest">Menit</span>
                                     </div>
-                                    <span className={`text-gray-500 font-bold mt-3 uppercase tracking-widest ${isFullscreen ? 'text-xl' : 'text-sm sm:text-base'}`}>Menit</span>
-                                </div>
-                                <div className={`font-black text-gray-300 -mt-8 ${isFullscreen ? 'text-8xl' : 'text-4xl sm:text-6xl'}`}>:</div>
-                                <div className="flex flex-col items-center">
-                                    <div className={`bg-gray-900 text-white flex items-center justify-center rounded-xl font-black shadow-inner ${
-                                        isFullscreen ? 'w-40 h-48 text-8xl' : 'w-20 h-24 sm:w-28 sm:h-32 text-4xl sm:text-6xl'
-                                    }`}>
-                                        {pad(seconds)}
+                                    <div className="text-4xl sm:text-6xl font-black text-gray-300 -mt-8">:</div>
+                                    <div className="flex flex-col items-center">
+                                        <div className="bg-gray-900 text-white w-20 h-24 sm:w-28 sm:h-32 flex items-center justify-center rounded-xl text-4xl sm:text-6xl font-black shadow-inner">{pad(seconds)}</div>
+                                        <span className="text-gray-500 font-bold mt-3 text-xs uppercase tracking-widest">Detik</span>
                                     </div>
-                                    <span className={`text-gray-500 font-bold mt-3 uppercase tracking-widest ${isFullscreen ? 'text-xl' : 'text-sm sm:text-base'}`}>Detik</span>
                                 </div>
                             </div>
                         </div>
 
+                        {/* Menu Grid */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
                             <button onClick={() => setView('modules')} className="group bg-white p-8 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col items-center justify-center gap-4 border border-gray-100">
                                 <div className="w-16 h-16 rounded-full bg-red-50 text-brand-red flex items-center justify-center group-hover:scale-110 transition-transform"><IconFileText /></div>
@@ -239,7 +237,6 @@ const App = () => {
                                 <div className="w-16 h-16 rounded-full bg-red-50 text-brand-red flex items-center justify-center group-hover:scale-110 transition-transform"><IconCalendar /></div>
                                 <h3 className="text-xl font-bold text-gray-800">Jadwal Kompetisi</h3>
                             </button>
-                            {/* Link Pengumpulan kini statis dan tidak terkait waktu rilis */}
                             <a href={config.submissionLink} target="_blank" rel="noreferrer" className="group bg-white p-8 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col items-center justify-center gap-4 border border-gray-100">
                                 <div className="w-16 h-16 rounded-full bg-red-50 text-brand-red flex items-center justify-center group-hover:scale-110 transition-transform"><IconShare2 /></div>
                                 <h3 className="text-xl font-bold text-gray-800">Link Pengumpulan</h3>
@@ -291,7 +288,7 @@ const App = () => {
                     </div>
                 )}
 
-                {/* VIEW: SCHEDULE */}
+                {/* VIEW: SCHEDULE DENGAN HIGHLIGHT JADWAL AKTIF */}
                 {view === 'schedule' && (
                     <div className="max-w-4xl mx-auto">
                         <div className="flex items-center gap-4 mb-8">
@@ -314,7 +311,9 @@ const App = () => {
                                             const isPast = currentTime > item.end;
                                             const isNow = currentTime >= item.start && currentTime <= item.end;
                                             return (
-                                                <div key={item.id} className={`p-6 flex flex-col sm:flex-row gap-4 sm:gap-8 hover:bg-gray-50 transition-colors ${isNow ? 'bg-red-50/30' : ''}`}>
+                                                <div key={item.id} className={`p-6 flex flex-col sm:flex-row gap-4 sm:gap-8 border-l-4 transition-all duration-300 ${
+                                                    isNow ? 'schedule-highlight border-l-red-500' : 'hover:bg-gray-50 border-l-transparent'
+                                                }`}>
                                                     <div className="min-w-[140px] text-brand-red font-bold flex flex-col justify-center">
                                                         <div className="text-lg">{item.start.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'})} - {item.end.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'})}</div>
                                                         {item.duration && <div className="text-xs text-gray-400 mt-1 uppercase tracking-wider">{item.duration}</div>}
@@ -324,7 +323,7 @@ const App = () => {
                                                         {item.pic && <span className="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-md">PIC: {item.pic}</span>}
                                                     </div>
                                                     <div className="flex items-center justify-start sm:justify-end min-w-[120px]">
-                                                        {isNow ? <span className="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-bold animate-pulse">Berlangsung</span> 
+                                                        {isNow ? <span className="px-3 py-1 rounded-full bg-red-100 text-brand-red text-sm font-bold shadow-sm animate-pulse">Berlangsung</span> 
                                                         : isPast ? <span className="px-3 py-1 rounded-full bg-gray-100 text-gray-500 text-sm font-bold">Selesai</span> 
                                                         : <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-bold">Akan Datang</span>}
                                                     </div>
@@ -338,6 +337,11 @@ const App = () => {
                     </div>
                 )}
             </main>
+
+            {/* CREDIT FOOTER */}
+            <footer className="w-full bg-white border-t border-gray-200 py-6 px-12 text-center text-sm font-medium text-gray-500 tracking-wide mt-auto">
+                <p>Created by <span className="font-bold text-gray-800">Muhamad Nuri Huda</span> • Part of <span className="font-bold text-brand-red">GDTLAB Indonesia</span> • © 2026</p>
+            </footer>
         </div>
     );
 };
