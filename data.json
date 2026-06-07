@@ -1,0 +1,57 @@
+{
+  "config": {
+    "headline": "Portal Kompetisi GDT",
+    "docLink": "https://link-dokumentasi-lomba.com",
+    "submissionLink": "https://link-pengumpulan-hasil.com"
+  },
+  "modules": [
+    {
+      "id": 1,
+      "title": "Modul 1: Corporate Identity Design",
+      "releaseTime": "2026-06-08T08:00:00",
+      "link": "https://link-soal-modul-1.com",
+      "pic": "Juri A"
+    },
+    {
+      "id": 2,
+      "title": "Modul 2: Packaging Design",
+      "releaseTime": "2026-06-08T13:00:00",
+      "link": "https://link-soal-modul-2.com",
+      "pic": "Juri B"
+    }
+  ],
+  "schedule": [
+    {
+      "id": 1,
+      "title": "Briefing Peserta & Persiapan",
+      "start": "2026-06-08T07:30:00",
+      "end": "2026-06-08T08:00:00",
+      "duration": "30 Menit",
+      "pic": "Panitia"
+    },
+    {
+      "id": 2,
+      "title": "Pelaksanaan Modul 1",
+      "start": "2026-06-08T08:00:00",
+      "end": "2026-06-08T12:00:00",
+      "duration": "4 Jam",
+      "pic": "Juri A"
+    },
+    {
+      "id": 3,
+      "title": "Istirahat (ISHOMA)",
+      "start": "2026-06-08T12:00:00",
+      "end": "2026-06-08T13:00:00",
+      "duration": "1 Jam",
+      "pic": "-"
+    },
+    {
+      "id": 4,
+      "title": "Pelaksanaan Modul 2",
+      "start": "2026-06-08T13:00:00",
+      "end": "2026-06-08T17:00:00",
+      "duration": "4 Jam",
+      "pic": "Juri B"
+    }
+  ]
+}
