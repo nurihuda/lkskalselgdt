@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal LKS GDT</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'DM Sans', sans-serif;
+            overflow-y: hidden;
+            background-color: #f3f4f6;
+        }
+        
+        /* Custom Webkit Scrollbar */
+        .app-container {
+            height: 100vh;
+            overflow-y: auto;
+        }
+        .app-container::-webkit-scrollbar { width: 8px; }
+        .app-container::-webkit-scrollbar-track { background: #f1f1f1; }
+        .app-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .app-container::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Custom Brand Classes */
+        .brand-red { background-color: #EE414B !important; color: white; }
+        .text-brand-red { color: #EE414B !important; }
+        .border-brand-red { border-color: #EE414B !important; }
+
+        /* Pulse Animation */
+        @keyframes pulse-fast {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+        .animate-pulse-fast {
+            animation: pulse-fast 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel" src="script.js"></script>
+</body>
+</html>
