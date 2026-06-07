@@ -35,6 +35,7 @@ const IconShare2 = () => <svg xmlns="http://www.w3.org/2000/svg" width="32" heig
 const IconSun = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M6.34 17.66l-1.41 1.41"/><path d="M19.07 4.93l-1.41 1.41"/></svg>;
 const IconMoon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>;
 const IconTable = () => <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3v18"/><path d="M3 12h18"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg>;
+const IconExternalLink = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>;
 
 // 2. MAIN APP COMPONENT
 const App = () => {
@@ -44,17 +45,19 @@ const App = () => {
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [timerScale, setTimerScale] = useState(1.0);
     const [darkMode, setDarkMode] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
     
-    const [config, setConfig] = useState({ headline: "", docLink: "", submissionLink: "" });
+    const [config, setConfig] = useState({ headline: "", docLink: "" });
     const [modules, setModules] = useState([]);
     const [schedule, setSchedule] = useState([]);
+    const [pesertaList, setPesertaList] = useState([]);
 
     const timerRef = useRef(null);
 
-    // Tautan Publikasi Web Spreadsheet untuk Embed iFrame (Bukan Versi Download CSV)
+    // Tautan iFrame GSheet Terpublikasi
     const spreadsheetEmbedUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRFr1dH2Y34-ZSSxN-Ycasseqx4a_kU8Pja9dQeShIA6la4X5BVQo-JiSCcdZ3k7X8SXxJ8OhVr48d0/pubhtml?gid=0&single=true";
 
-    // Fetch Data Konfigurasi Internal
+    // Fetch Data
     useEffect(() => {
         fetch('data.json')
             .then(response => response.json())
@@ -73,6 +76,12 @@ const App = () => {
                 setConfig(data.config);
                 setModules(processedModules);
                 setSchedule(processedSchedule);
+
+                // Mengambil data terimport dari window.DATA_PESERTA (peserta.js)
+                if (window.DATA_PESERTA) {
+                    setPesertaList(window.DATA_PESERTA);
+                }
+
                 setLoading(false);
             })
             .catch(error => {
@@ -120,7 +129,7 @@ const App = () => {
     const zoomIn = () => setTimerScale(prev => Math.min(prev + 0.1, 2.0));
     const zoomOut = () => setTimerScale(prev => Math.max(prev - 0.1, 0.6));
 
-    // Logic Event
+    // Logic Event Timer
     const { activeEvent, nextEvent } = useMemo(() => {
         let active = null;
         let next = null;
@@ -147,6 +156,14 @@ const App = () => {
 
     const pad = (num) => String(num).padStart(2, '0');
 
+    // Filter Pencarian Peserta
+    const filteredPeserta = useMemo(() => {
+        return pesertaList.filter(p => 
+            p.nama.toLowerCase().includes(searchQuery.toLowerCase()) || 
+            p.no.includes(searchQuery)
+        );
+    }, [pesertaList, searchQuery]);
+
     if (loading) {
         return (
             <div className="flex flex-col items-center justify-center h-screen bg-gray-100 dark:bg-gray-950">
@@ -161,8 +178,6 @@ const App = () => {
             {/* HEADER */}
             <header className="sticky top-0 z-50 brand-red shadow-lg w-full px-4 sm:px-12 py-3">
                 <div className="w-full flex justify-between items-center relative">
-                    
-                    {/* Logo Sisi Kiri */}
                     <div className="flex items-center z-10">
                         <button onClick={() => setView('dashboard')} className="hover:opacity-90 transition-opacity focus:outline-none">
                             <LogoGDT className="h-14 sm:h-16 w-auto text-white" />
@@ -181,7 +196,6 @@ const App = () => {
                         <button 
                             onClick={toggleDarkMode} 
                             className="p-2.5 bg-white bg-opacity-10 hover:bg-opacity-20 text-white rounded-xl transition-all border border-white border-opacity-10"
-                            title={darkMode ? "Aktifkan Mode Terang" : "Aktifkan Mode Malam"}
                         >
                             {darkMode ? <IconSun /> : <IconMoon />}
                         </button>
@@ -207,22 +221,20 @@ const App = () => {
                             <h2 className="text-2xl font-extrabold text-gray-800 dark:text-gray-100">{config.headline}</h2>
                         </div>
 
-                        {/* PERBAIKAN REVISI KOTAK TIMER (Menghilangkan Double Atribut className yang memicu white screen) */}
+                        {/* KOTAK TIMER */}
                         <div 
                             ref={timerRef}
                             className={`bg-white dark:bg-gray-900 shadow-xl max-w-4xl mx-auto text-center border border-gray-100 dark:border-gray-800 relative transition-all duration-300 ${
-                                isFullscreen 
-                                ? 'flex flex-col items-center justify-center w-full h-full p-12 m-0 max-w-none rounded-none' 
-                                : 'rounded-3xl p-8'
+                                isFullscreen ? 'flex flex-col items-center justify-center w-full h-full p-12 m-0 max-w-none rounded-none' : 'rounded-3xl p-8'
                             }`}
                         >
                             {/* Toolbar Kontrol */}
                             <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-gray-50 dark:bg-gray-800 p-1 rounded-xl border border-gray-200 dark:border-gray-700 z-10">
-                                <button onClick={zoomOut} className="w-8 h-8 font-black text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg flex items-center justify-center text-lg transition-colors focus:outline-none">-</button>
+                                <button onClick={zoomOut} className="w-8 h-8 font-black text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg flex items-center justify-center text-lg focus:outline-none">-</button>
                                 <span className="text-xs text-gray-400 font-bold px-1">{Math.round(timerScale * 100)}%</span>
-                                <button onClick={zoomIn} className="w-8 h-8 font-black text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg flex items-center justify-center text-lg transition-colors focus:outline-none">+</button>
+                                <button onClick={zoomIn} className="w-8 h-8 font-black text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg flex items-center justify-center text-lg focus:outline-none">+</button>
                                 <div className="w-[1px] h-5 bg-gray-300 dark:bg-gray-600 mx-1"></div>
-                                <button onClick={toggleFullScreen} className="w-8 h-8 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg flex items-center justify-center transition-colors focus:outline-none">
+                                <button onClick={toggleFullScreen} className="w-8 h-8 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg flex items-center justify-center focus:outline-none">
                                     {isFullscreen ? <IconMirror /> : <IconMaximize />}
                                 </button>
                             </div>
@@ -234,7 +246,7 @@ const App = () => {
                                     </div>
                                 ) : (
                                     <div className={`inline-flex items-center gap-2 px-6 py-2 rounded-full font-bold mb-8 shadow-sm ${
-                                        activeEvent ? "bg-green-100 text-green-700 dark:bg-green-950/50 dark:text-green-400 border border-green-200 dark:border-green-900 animate-pulse-fast" : "bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-400 border border-blue-200 dark:border-blue-900"
+                                        activeEvent ? "bg-green-100 text-green-700 dark:bg-green-950/50 dark:text-green-400 border border-green-200 dark:border-green-900 shadow-sm animate-pulse-fast" : "bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-400 border border-blue-200 dark:border-blue-900"
                                     }`}>
                                         <span className="w-3 h-3 rounded-full bg-current"></span>
                                         {activeEvent ? `SEDANG BERLANGSUNG: ${activeEvent.title}` : `Agenda Berikutnya: ${nextEvent?.title || 'Menunggu Jadwal'}`}
@@ -277,10 +289,10 @@ const App = () => {
                                 <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">Live Spreadsheet</h3>
                             </button>
 
-                            <a href={config.submissionLink} target="_blank" rel="noreferrer" className="group bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col items-center justify-center gap-4 border border-gray-100 dark:border-gray-800 text-center">
+                            <button onClick={() => setView('submission')} className="group bg-white p-6 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col items-center justify-center gap-4 border border-gray-100 dark:border-gray-900 text-center">
                                 <div className="w-14 h-14 rounded-full bg-red-50 dark:bg-red-950/30 text-brand-red flex items-center justify-center group-hover:scale-110 transition-transform"><IconShare2 /></div>
                                 <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">Link Pengumpulan</h3>
-                            </a>
+                            </button>
                             
                             <a href={config.docLink} target="_blank" rel="noreferrer" className="group bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col items-center justify-center gap-4 border border-gray-100 dark:border-gray-800 text-center">
                                 <div className="w-14 h-14 rounded-full bg-red-50 dark:bg-red-950/30 text-brand-red flex items-center justify-center group-hover:scale-110 transition-transform"><IconDatabase /></div>
@@ -290,9 +302,74 @@ const App = () => {
                     </div>
                 )}
 
+                {/* VIEW: LINK PENGUMPULAN TABEL DINAMIS */}
+                {view === 'submission' && (
+                    <div className="max-w-4xl mx-auto animate-fade-in">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-xl brand-red flex items-center justify-center shadow-md"><IconShare2 /></div>
+                                <div>
+                                    <h2 className="text-3xl font-extrabold text-gray-800 dark:text-gray-100">Folder Pengumpulan</h2>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400">Silakan pilih folder drive pengumpulan tugas berdasarkan nomor peserta.</p>
+                                </div>
+                            </div>
+                            <div className="relative">
+                                <input 
+                                    type="text" 
+                                    placeholder="Cari No / Nama..." 
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="w-full sm:w-64 px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr className="bg-gray-50 dark:bg-gray-800 border-b border-gray-100 dark:border-gray-800 text-gray-600 dark:text-gray-400 font-bold text-sm tracking-wider uppercase">
+                                            <th className="px-6 py-4 text-center w-24">No. Peserta</th>
+                                            <th className="px-6 py-4">Nama Lengkap Peserta</th>
+                                            <th className="px-6 py-4 text-right">Aksi Folder Pengumpulan</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                                        {filteredPeserta.length > 0 ? (
+                                            filteredPeserta.map((peserta, idx) => (
+                                                <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors text-gray-700 dark:text-gray-300">
+                                                    <td className="px-6 py-4 text-center font-mono font-bold text-gray-900 dark:text-white bg-gray-50/50 dark:bg-gray-950/20">{peserta.no}</td>
+                                                    <td className="px-6 py-4 font-semibold">{peserta.nama}</td>
+                                                    <td className="px-6 py-4 text-right">
+                                                        <a 
+                                                            href={peserta.link} 
+                                                            target="_blank" 
+                                                            rel="noreferrer" 
+                                                            className="inline-flex items-center gap-2 brand-red px-4 py-2 rounded-xl text-sm font-bold shadow-md hover:bg-red-600 transition-all transform hover:-translate-y-0.5"
+                                                        >
+                                                            <span>{peserta.no}_LKS KALSEL 2026</span>
+                                                            <IconExternalLink />
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        ) : (
+                                            <tr>
+                                                <td colSpan="3" className="px-6 py-12 text-center text-gray-400 dark:text-gray-500 font-medium">
+                                                    Data peserta tidak ditemukan.
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {/* VIEW: LIVE SPREADSHEET */}
                 {view === 'spreadsheet' && (
-                    <div className="max-w-5xl mx-auto w-full h-full flex flex-col">
+                    <div className="max-w-5xl mx-auto w-full h-full flex flex-col animate-fade-in">
                         <div className="flex items-center gap-4 mb-6">
                             <div className="w-11 h-11 rounded-xl brand-red flex items-center justify-center"><IconTable /></div>
                             <div>
@@ -313,7 +390,7 @@ const App = () => {
 
                 {/* VIEW: MODULES */}
                 {view === 'modules' && (
-                    <div className="max-w-4xl mx-auto">
+                    <div className="max-w-4xl mx-auto animate-fade-in">
                         <div className="flex items-center gap-4 mb-8">
                             <div className="w-12 h-12 rounded-xl brand-red flex items-center justify-center"><IconFileText /></div>
                             <h2 className="text-3xl font-extrabold text-gray-800 dark:text-gray-100">Modul Kompetisi</h2>
@@ -337,7 +414,7 @@ const App = () => {
                                                         <IconUnlock /> Buka Modul
                                                     </a>
                                                 ) : (
-                                                    <button disabled className="inline-flex items-center gap-2 bg-gray-200 dark:bg-gray-800 text-gray-500 dark:text-gray-500 px-6 py-3 rounded-xl font-bold cursor-not-allowed">
+                                                    <button disabled className="inline-flex items-center gap-2 bg-gray-200 dark:bg-gray-800 text-gray-500 px-6 py-3 rounded-xl font-bold cursor-not-allowed">
                                                         <IconLock /> Terkunci
                                                     </button>
                                                 )}
@@ -352,7 +429,7 @@ const App = () => {
 
                 {/* VIEW: SCHEDULE */}
                 {view === 'schedule' && (
-                    <div className="max-w-4xl mx-auto">
+                    <div className="max-w-4xl mx-auto animate-fade-in">
                         <div className="flex items-center gap-4 mb-8">
                             <div className="w-12 h-12 rounded-xl brand-red flex items-center justify-center"><IconCalendar /></div>
                             <h2 className="text-3xl font-extrabold text-gray-800 dark:text-gray-100">Jadwal Kompetisi</h2>
