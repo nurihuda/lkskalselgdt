@@ -71,16 +71,16 @@
       "id": 5,
       "title": "Pengerjaan Modul 1",
       "start": "2026-06-09T14:00:00",
-      "end": "2026-06-09T16:45:00",
-      "duration": "2 Jam 45 Menit",
+      "end": "2026-06-09T17:00:00",
+      "duration": "3 Jam",
       "pic": "Peserta"
     },
     {
       "id": 6,
       "title": "Pengumpulan Modul 1",
-      "start": "2026-06-09T16:45:00",
+      "start": "2026-06-09T17:00:00",
       "end": "2026-06-09T17:15:00",
-      "duration": "30 Menit",
+      "duration": "15 Menit",
       "pic": "Peserta & Juri"
     },
     {
