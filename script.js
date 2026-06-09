@@ -51,7 +51,7 @@ const App = () => {
     const [searchQuery, setSearchQuery] = useState("");
     
     // Fitur Sort By state
-    const [sortBy, setSortBy] = useState("no-asc"); // "no-asc", "no-desc", "name-asc"
+    const [sortBy, setSortBy] = useState("no-asc");
 
     // State Input Tambah Peserta Baru
     const [newNo, setNewNo] = useState("");
@@ -99,7 +99,7 @@ const App = () => {
                 setModules(processedModules);
                 setSchedule(processedSchedule);
 
-                // Sinkronisasi data peserta (Ambil dari lokal jika ada penambahan baru)
+                // Sinkronisasi data peserta
                 const savedPeserta = localStorage.getItem('gdt_custom_peserta_list');
                 if (savedPeserta) {
                     setPesertaList(JSON.parse(savedPeserta));
@@ -188,7 +188,6 @@ const App = () => {
         setPesertaList(updatedList);
         localStorage.setItem('gdt_custom_peserta_list', JSON.stringify(updatedList));
         
-        // Reset form
         setNewNo("");
         setNewNama("");
         setNewLink("");
@@ -255,12 +254,10 @@ const App = () => {
 
     // Mengolah Filter Pencarian DAN Fitur Urutan Sort By Sekaligus
     const processedPesertaTable = useMemo(() => {
-        // 1. Jalankan filter pencarian teks dulu
         let result = pesertaList.filter(p => 
             p.nama.toLowerCase().includes(searchQuery.toLowerCase()) || p.no.includes(searchQuery)
         );
 
-        // 2. Jalankan logika Sort By (Pengurutan Angka / Nama)
         return result.sort((a, b) => {
             if (sortBy === 'no-asc') {
                 return parseInt(a.no) - parseInt(b.no);
@@ -399,12 +396,11 @@ const App = () => {
                                 </div>
                                 <button type="submit" className="w-full brand-red py-2.5 rounded-xl font-bold shadow-md hover:bg-red-600 text-xs uppercase tracking-wider">Simpan Konfigurasi</button>
                                 <button type="button" onClick={resetAdminSettings} className="w-full py-2 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-xl text-xs font-bold uppercase hover:bg-gray-200">Reset Semua Global</button>
-                            </div >
+                            </form>
                         </div>
 
-                        {/* Lajur Kanan: Ruang Tambah & Hapus Folder Peserta Susulan (Sesuai Request) */}
+                        {/* Lajur Kanan: Ruang Tambah & Hapus Folder Peserta */}
                         <div className="lg:col-span-2 space-y-6">
-                            {/* Panel Input Tambah Baru */}
                             <div className="bg-white dark:bg-gray-900 p-6 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-800">
                                 <div className="flex items-center gap-3 border-b border-gray-100 dark:border-gray-800 pb-3 mb-4">
                                     <div className="text-brand-red"><IconUserPlus /></div>
@@ -429,7 +425,6 @@ const App = () => {
                                 </form>
                             </div>
 
-                            {/* List Tabel Peserta yang bisa Dihapus */}
                             <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
                                 <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
                                     <h3 className="font-bold text-sm text-gray-700 dark:text-gray-300 uppercase tracking-wide">Daftar Manajemen Folder Peserta ({pesertaList.length})</h3>
@@ -444,7 +439,7 @@ const App = () => {
                                                     <p className="text-xs text-gray-400 truncate max-w-xs sm:max-w-md">{p.link}</p>
                                                 </div>
                                             </div>
-                                            <button onClick={() => handleDeletePeserta(p.no, p.nama)} className="p-2 text-gray-400 hover:text-red-500 transition-colors" title="Hapus Peserta">
+                                            <button type="button" onClick={() => handleDeletePeserta(p.no, p.nama)} className="p-2 text-gray-400 hover:text-red-500 transition-colors" title="Hapus Peserta">
                                                 <IconTrash />
                                             </button>
                                         </div>
@@ -469,7 +464,6 @@ const App = () => {
                             
                             {/* INPUT FILTER CARI & CONTROLLER SORT BY */}
                             <div className="flex flex-wrap items-center gap-3">
-                                {/* BARU: FILTER DROP-DOWN SORT BY */}
                                 <div className="flex items-center gap-1.5 bg-white dark:bg-gray-800 px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700">
                                     <span className="text-xs font-bold text-gray-400 uppercase">Urutan:</span>
                                     <select 
