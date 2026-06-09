@@ -37,20 +37,29 @@ const IconMoon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height
 const IconTable = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3v18"/><path d="M3 12h18"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg>;
 const IconExternalLink = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>;
 const IconSettings = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>;
+const IconTrash = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>;
+const IconUserPlus = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>;
 
 // 2. MAIN APP COMPONENT
 const App = () => {
     const [loading, setLoading] = useState(true);
-    const [view, setView] = useState('dashboard'); // 'dashboard', 'modules', 'schedule', 'submission', 'admin'
+    const [view, setView] = useState('dashboard'); 
     const [currentTime, setCurrentTime] = useState(new Date());
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [timerScale, setTimerScale] = useState(1.0);
     const [darkMode, setDarkMode] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     
+    // Fitur Sort By state
+    const [sortBy, setSortBy] = useState("no-asc"); // "no-asc", "no-desc", "name-asc"
+
+    // State Input Tambah Peserta Baru
+    const [newNo, setNewNo] = useState("");
+    const [newNama, setNewNama] = useState("");
+    const [newLink, setNewLink] = useState("");
+
     // State Admin & Offset Waktu (Molor)
-    const [timeOffset, setTimeOffset] = useState(0); // dalam satuan menit
-    const [adminKeyInput, setAdminKeyInput] = useState("");
+    const [timeOffset, setTimeOffset] = useState(0); 
     
     const [config, setConfig] = useState({ headline: "", docLink: "", submissionLink: "" });
     const [modules, setModules] = useState([]);
@@ -62,7 +71,6 @@ const App = () => {
 
     // Load Data & Sync dari LocalStorage
     useEffect(() => {
-        // Cek jika ada kompensasi waktu tersimpan di browser proyektor lokal
         const savedOffset = localStorage.getItem('gdt_time_offset');
         if (savedOffset) setTimeOffset(parseInt(savedOffset));
 
@@ -72,7 +80,6 @@ const App = () => {
         fetch('data.json')
             .then(response => response.json())
             .then(data => {
-                // Sinkronisasi link modul jika pernah diedit lokal via Admin Room
                 const savedModuleLinks = localStorage.getItem('gdt_custom_module_links');
                 let localLinks = savedModuleLinks ? JSON.parse(savedModuleLinks) : null;
 
@@ -92,9 +99,14 @@ const App = () => {
                 setModules(processedModules);
                 setSchedule(processedSchedule);
 
-                if (window.DATA_PESERTA) {
+                // Sinkronisasi data peserta (Ambil dari lokal jika ada penambahan baru)
+                const savedPeserta = localStorage.getItem('gdt_custom_peserta_list');
+                if (savedPeserta) {
+                    setPesertaList(JSON.parse(savedPeserta));
+                } else if (window.DATA_PESERTA) {
                     setPesertaList(window.DATA_PESERTA);
                 }
+
                 setLoading(false);
             })
             .catch(error => {
@@ -103,10 +115,9 @@ const App = () => {
             });
     }, []);
 
-    // Real-time Clock dengan Injeksi Offset Admin
+    // Real-time Clock
     useEffect(() => {
         const timer = setInterval(() => {
-            // Waktu berjalan normal, tapi dimodifikasi/dimundurkan virtual berdasarkan input admin
             const baseTime = new Date();
             if (timeOffset !== 0) {
                 baseTime.setMinutes(baseTime.getMinutes() - timeOffset);
@@ -116,11 +127,11 @@ const App = () => {
         return () => clearInterval(timer);
     }, [timeOffset]);
 
-    // Deteksi Password Rahasia di Kolom Pencarian Lomba untuk masuk Admin Room
+    // Deteksi Pintu Masuk Admin Room
     useEffect(() => {
         if (searchQuery.toLowerCase() === 'admin123') {
             setView('admin');
-            setSearchQuery(''); // Reset isi input
+            setSearchQuery(''); 
         }
     }, [searchQuery]);
 
@@ -156,25 +167,63 @@ const App = () => {
     const zoomIn = () => setTimerScale(prev => Math.min(prev + 0.1, 2.0));
     const zoomOut = () => setTimerScale(prev => Math.max(prev - 0.1, 0.6));
 
-    // Handler Aksi Admin Room
+    // Tambah Peserta Baru via Admin Area
+    const handleAddPeserta = (e) => {
+        e.preventDefault();
+        if (!newNo || !newNama || !newLink) {
+            alert("Harap isi semua kolom nomor, nama, dan link folder peserta!");
+            return;
+        }
+
+        const nomorFormatted = String(newNo).padStart(2, '0');
+        const exists = pesertaList.some(p => p.no === nomorFormatted);
+        if (exists) {
+            alert(`Nomor peserta ${nomorFormatted} sudah digunakan!`);
+            return;
+        }
+
+        const newPeserta = { no: nomorFormatted, nama: newNama, link: newLink };
+        const updatedList = [...pesertaList, newPeserta];
+        
+        setPesertaList(updatedList);
+        localStorage.setItem('gdt_custom_peserta_list', JSON.stringify(updatedList));
+        
+        // Reset form
+        setNewNo("");
+        setNewNama("");
+        setNewLink("");
+        alert(`Peserta baru bernama "${newNama}" sukses ditambahkan ke web secara lokal!`);
+    };
+
+    // Hapus Peserta Lomba via Admin Area
+    const handleDeletePeserta = (noPeserta, namaPeserta) => {
+        if (confirm(`Apakah Anda yakin ingin menghapus peserta No.${noPeserta} - ${namaPeserta}?`)) {
+            const updatedList = pesertaList.filter(p => p.no !== noPeserta);
+            setPesertaList(updatedList);
+            localStorage.setItem('gdt_custom_peserta_list', JSON.stringify(updatedList));
+        }
+    };
+
+    // Simpan Pengaturan Umum Admin
     const saveAdminSettings = (e) => {
         e.preventDefault();
         localStorage.setItem('gdt_time_offset', timeOffset);
         
-        // Simpan tautan kustom modul lokal drive
         const customLinks = modules.map(m => m.link);
         localStorage.setItem('gdt_custom_module_links', JSON.stringify(customLinks));
         
-        alert("Pengaturan Admin Berhasil Disimpan & Disinkronkan!");
+        alert("Konfigurasi Waktu & Modul Berhasil Disimpan!");
         setView('dashboard');
     };
 
     const resetAdminSettings = () => {
-        localStorage.removeItem('gdt_time_offset');
-        localStorage.removeItem('gdt_custom_module_links');
-        setTimeOffset(0);
-        alert("Semua modifikasi waktu & link dikembalikan ke standar data.json asli!");
-        window.location.reload();
+        if (confirm("Apakah Anda yakin ingin menghapus semua kustomisasi lokal (waktu, modul, & peserta susulan) kembali ke bawaan GitHub?")) {
+            localStorage.removeItem('gdt_time_offset');
+            localStorage.removeItem('gdt_custom_module_links');
+            localStorage.removeItem('gdt_custom_peserta_list');
+            alert("Data web dibersihkan!");
+            window.location.reload();
+        }
     };
 
     // Logic Event Timer
@@ -204,20 +253,25 @@ const App = () => {
 
     const pad = (num) => String(num).padStart(2, '0');
 
-    const filteredPeserta = useMemo(() => {
-        return pesertaList.filter(p => 
+    // Mengolah Filter Pencarian DAN Fitur Urutan Sort By Sekaligus
+    const processedPesertaTable = useMemo(() => {
+        // 1. Jalankan filter pencarian teks dulu
+        let result = pesertaList.filter(p => 
             p.nama.toLowerCase().includes(searchQuery.toLowerCase()) || p.no.includes(searchQuery)
         );
-    }, [pesertaList, searchQuery]);
 
-    if (loading) {
-        return (
-            <div className="flex flex-col items-center justify-center h-screen bg-gray-100 dark:bg-gray-950">
-                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-brand-red border-solid"></div>
-                <p className="mt-4 text-gray-600 dark:text-gray-400 font-medium tracking-wide">Memuat Data Portal...</p>
-            </div>
-        );
-    }
+        // 2. Jalankan logika Sort By (Pengurutan Angka / Nama)
+        return result.sort((a, b) => {
+            if (sortBy === 'no-asc') {
+                return parseInt(a.no) - parseInt(b.no);
+            } else if (sortBy === 'no-desc') {
+                return parseInt(b.no) - parseInt(a.no);
+            } else if (sortBy === 'name-asc') {
+                return a.nama.localeCompare(b.nama);
+            }
+            return 0;
+        });
+    }, [pesertaList, searchQuery, sortBy]);
 
     return (
         <div className="app-container">
@@ -231,17 +285,10 @@ const App = () => {
                     </div>
                     
                     <div className="flex items-center gap-3">
-                        <button 
-                            onClick={toggleDarkMode} 
-                            className="p-2.5 bg-white bg-opacity-10 hover:bg-opacity-20 text-white rounded-xl transition-all border border-white border-opacity-10"
-                        >
+                        <button onClick={toggleDarkMode} className="p-2.5 bg-white bg-opacity-10 hover:bg-opacity-20 text-white rounded-xl transition-all border border-white border-opacity-10">
                             {darkMode ? <IconSun /> : <IconMoon />}
                         </button>
-
-                        <button 
-                            onClick={() => setView('dashboard')} 
-                            className="p-2.5 bg-white bg-opacity-10 hover:bg-opacity-20 text-white rounded-xl transition-all flex items-center gap-2 font-bold text-sm uppercase tracking-wider border border-white border-opacity-10"
-                        >
+                        <button onClick={() => setView('dashboard')} className="p-2.5 bg-white bg-opacity-10 hover:bg-opacity-20 text-white rounded-xl transition-all flex items-center gap-2 font-bold text-sm uppercase tracking-wider border border-white border-opacity-10">
                             <IconHome />
                             <span className="hidden md:inline">Home</span>
                         </button>
@@ -252,16 +299,11 @@ const App = () => {
             {/* MAIN CONTENT CONTAINER */}
             <main className="flex-grow max-w-6xl w-full mx-auto px-6 py-10 pb-16">
                 
-                {/* JUDUL UTAMA DI ATAS KONTEN */}
                 {view !== 'admin' && (
                     <div className="text-center mb-8">
-                        <h1 className="text-2xl sm:text-4xl font-black tracking-wider uppercase text-gray-800 dark:text-white">
-                            {config.headline || "Portal Utama"}
-                        </h1>
+                        <h1 className="text-2xl sm:text-4xl font-black tracking-wider uppercase text-gray-800 dark:text-white">{config.headline || "Portal Utama"}</h1>
                         {timeOffset !== 0 && (
-                            <span className="inline-block mt-2 bg-amber-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase animate-pulse">
-                                Kontrol Waktu Admin Aktif (Kompensasi: {timeOffset} Menit)
-                            </span>
+                            <span className="inline-block mt-2 bg-amber-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase animate-pulse">Kontrol Waktu Admin Aktif (Kompensasi: {timeOffset} Menit)</span>
                         )}
                     </div>
                 )}
@@ -270,31 +312,20 @@ const App = () => {
                 {view === 'dashboard' && (
                     <div className="space-y-12 animate-fade-in">
                         {/* KOTAK TIMER */}
-                        <div 
-                            ref={timerRef}
-                            className={`bg-white dark:bg-gray-900 shadow-xl max-w-4xl mx-auto text-center border border-gray-100 dark:border-gray-800 relative transition-all duration-300 ${
-                                isFullscreen ? 'flex flex-col items-center justify-center w-full h-full p-12 m-0 max-w-none rounded-none' : 'rounded-3xl p-8'
-                            }`}
-                        >
+                        <div ref={timerRef} className={`bg-white dark:bg-gray-900 shadow-xl max-w-4xl mx-auto text-center border border-gray-100 dark:border-gray-800 relative transition-all duration-300 ${isFullscreen ? 'flex flex-col items-center justify-center w-full h-full p-12 m-0 max-w-none rounded-none' : 'rounded-3xl p-8'}`}>
                             <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-gray-50 dark:bg-gray-800 p-1 rounded-xl border border-gray-200 dark:border-gray-700 z-10">
                                 <button onClick={zoomOut} className="w-8 h-8 font-black text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg flex items-center justify-center text-lg focus:outline-none">-</button>
                                 <span className="text-xs text-gray-400 font-bold px-1">{Math.round(timerScale * 100)}%</span>
                                 <button onClick={zoomIn} className="w-8 h-8 font-black text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg flex items-center justify-center text-lg focus:outline-none">+</button>
                                 <div className="w-[1px] h-5 bg-gray-300 dark:bg-gray-600 mx-1"></div>
-                                <button onClick={toggleFullScreen} className="w-8 h-8 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg flex items-center justify-center focus:outline-none">
-                                    {isFullscreen ? <IconMirror /> : <IconMaximize />}
-                                </button>
+                                <button onClick={toggleFullScreen} className="w-8 h-8 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg flex items-center justify-center focus:outline-none">{isFullscreen ? <IconMirror /> : <IconMaximize />}</button>
                             </div>
 
                             <div style={{ transform: `scale(${timerScale})`, transformOrigin: 'center' }} className="transition-transform duration-200 my-4">
                                 {isFinished ? (
-                                    <div className="inline-flex items-center gap-2 px-6 py-2 bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full font-bold mb-6">
-                                        Seluruh Agenda Selesai
-                                    </div>
+                                    <div className="inline-flex items-center gap-2 px-6 py-2 bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full font-bold mb-6">Seluruh Agenda Selesai</div>
                                 ) : (
-                                    <div className={`inline-flex items-center gap-2 px-6 py-2 rounded-full font-bold mb-8 shadow-sm ${
-                                        activeEvent ? "bg-green-100 text-green-700 dark:bg-green-950/50 dark:text-green-400 border border-green-200 dark:border-green-900 shadow-sm animate-pulse-fast" : "bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-400 border border-blue-200 dark:border-blue-900"
-                                    }`}>
+                                    <div className={`inline-flex items-center gap-2 px-6 py-2 rounded-full font-bold mb-8 shadow-sm ${activeEvent ? "bg-green-100 text-green-700 dark:bg-green-950/50 dark:text-green-400 border border-green-200 dark:border-green-900 shadow-sm animate-pulse-fast" : "bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-400 border border-blue-200 dark:border-blue-900"}`}>
                                         <span className="w-3 h-3 rounded-full bg-current"></span>
                                         {activeEvent ? `SEDANG BERLANGSUNG: ${activeEvent.title}` : `Agenda Berikutnya: ${nextEvent?.title || 'Menunggu Jadwal'}`}
                                     </div>
@@ -319,23 +350,20 @@ const App = () => {
                             </div>
                         </div>
 
-                        {/* Menu Grid (4 Utama Utama) */}
+                        {/* Menu Grid */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
                             <button onClick={() => setView('modules')} className="group bg-white p-8 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col items-center justify-center gap-4 border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900">
                                 <div className="w-16 h-16 rounded-full bg-red-50 dark:bg-red-950/30 text-brand-red flex items-center justify-center group-hover:scale-110 transition-transform"><IconFileText /></div>
                                 <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">Akses Modul</h3>
                             </button>
-                            
                             <button onClick={() => setView('schedule')} className="group bg-white p-8 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col items-center justify-center gap-4 border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900">
                                 <div className="w-16 h-16 rounded-full bg-red-50 dark:bg-red-950/30 text-brand-red flex items-center justify-center group-hover:scale-110 transition-transform"><IconCalendar /></div>
                                 <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">Jadwal Kompetisi</h3>
                             </button>
-
                             <button onClick={() => setView('submission')} className="group bg-white p-8 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col items-center justify-center gap-4 border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 text-center">
                                 <div className="w-16 h-16 rounded-full bg-red-50 dark:bg-red-950/30 text-brand-red flex items-center justify-center group-hover:scale-110 transition-transform"><IconShare2 /></div>
                                 <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">Folder Pengumpulan</h3>
                             </button>
-                            
                             <a href={config.docLink} target="_blank" rel="noreferrer" className="group bg-white p-8 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col items-center justify-center gap-4 border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 text-center">
                                 <div className="w-16 h-16 rounded-full bg-red-50 dark:bg-red-950/30 text-brand-red flex items-center justify-center group-hover:scale-110 transition-transform"><IconDatabase /></div>
                                 <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">Dokumentasi</h3>
@@ -344,59 +372,90 @@ const App = () => {
                     </div>
                 )}
 
-                {/* VIEW: ROOM ADMIN RAHASIA */}
+                {/* VIEW: CONTROL PANEL RAHASIA ADMIN */}
                 {view === 'admin' && (
-                    <div className="max-w-2xl mx-auto bg-white dark:bg-gray-900 p-8 rounded-3xl shadow-2xl border border-gray-100 dark:border-gray-800 animate-fade-in">
-                        <div className="flex items-center gap-3 border-b border-gray-100 dark:border-gray-800 pb-4 mb-6">
-                            <div className="text-brand-red"><IconSettings /></div>
-                            <h2 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-wide">GDTLAB Admin Control Room</h2>
+                    <div className="max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fade-in">
+                        {/* Lajur Kiri: Setting Jam & Modul */}
+                        <div className="lg:col-span-1 bg-white dark:bg-gray-900 p-6 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-800 h-fit">
+                            <div className="flex items-center gap-3 border-b border-gray-100 dark:border-gray-800 pb-3 mb-5">
+                                <div className="text-brand-red"><IconSettings /></div>
+                                <h2 className="text-lg font-black text-gray-900 dark:text-white uppercase">Konfigurasi Lomba</h2>
+                            </div>
+                            <form onSubmit={saveAdminSettings} className="space-y-5">
+                                <div className="space-y-1">
+                                    <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Kompensasi Waktu Timeline (Menit):</label>
+                                    <input type="number" value={timeOffset} onChange={(e) => setTimeOffset(parseInt(e.target.value) || 0)} className="w-full px-4 py-2 text-sm rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 font-bold focus:ring-1 focus:ring-red-500 focus:outline-none"/>
+                                </div>
+                                <div className="space-y-3 pt-3 border-t border-gray-100 dark:border-gray-800">
+                                    <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Override Link Modul Soal:</label>
+                                    {modules.map((modul, idx) => (
+                                        <div key={idx} className="space-y-1">
+                                            <span className="text-[11px] font-bold text-gray-400">Modul {idx + 1}:</span>
+                                            <input type="text" value={modul.link} onChange={(e) => {
+                                                const u = [...modules]; u[idx].link = e.target.value; setModules(u);
+                                            }} className="w-full px-3 py-1.5 text-xs rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"/>
+                                        </div>
+                                    ))}
+                                </div>
+                                <button type="submit" className="w-full brand-red py-2.5 rounded-xl font-bold shadow-md hover:bg-red-600 text-xs uppercase tracking-wider">Simpan Konfigurasi</button>
+                                <button type="button" onClick={resetAdminSettings} className="w-full py-2 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-xl text-xs font-bold uppercase hover:bg-gray-200">Reset Semua Global</button>
+                            </div >
                         </div>
-                        
-                        <form onSubmit={saveAdminSettings} className="space-y-6">
-                            {/* Opsi 1: Kategori Offset Penggeser Waktu (Mundur/Maju) */}
-                            <div className="space-y-2">
-                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Modifikasi Waktu Timeline (Menit):</label>
-                                <input 
-                                    type="number" 
-                                    value={timeOffset}
-                                    onChange={(e) => setTimeOffset(parseInt(e.target.value) || 0)}
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white font-mono font-bold focus:outline-none focus:ring-2 focus:ring-red-500"
-                                    placeholder="Contoh: isi 15 jika jadwal molor 15 menit"
-                                />
-                                <p className="text-xs text-amber-500 font-medium">💡 Isi nilai POSITIF (misal: 15) jika agenda molor/melar dari jadwal asli. Isi NEGATIF (misal: -10) jika berjalan lebih cepat.</p>
-                            </div>
 
-                            {/* Opsi 2: Ganti Tautan Folder Modul Instan */}
-                            <div className="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-800">
-                                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">Override Tautan Google Drive Modul:</label>
-                                {modules.map((modul, idx) => (
-                                    <div key={idx} className="flex flex-col gap-1">
-                                        <span className="text-xs font-bold text-gray-400 uppercase">Modul {idx + 1} ({modul.title || "Soal"}):</span>
-                                        <input 
-                                            type="text"
-                                            value={modul.link}
-                                            onChange={(e) => {
-                                                const updated = [...modules];
-                                                updated[idx].link = e.target.value;
-                                                setModules(updated);
-                                            }}
-                                            className="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-1 focus:ring-red-500"
-                                        />
+                        {/* Lajur Kanan: Ruang Tambah & Hapus Folder Peserta Susulan (Sesuai Request) */}
+                        <div className="lg:col-span-2 space-y-6">
+                            {/* Panel Input Tambah Baru */}
+                            <div className="bg-white dark:bg-gray-900 p-6 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-800">
+                                <div className="flex items-center gap-3 border-b border-gray-100 dark:border-gray-800 pb-3 mb-4">
+                                    <div className="text-brand-red"><IconUserPlus /></div>
+                                    <h2 className="text-lg font-black text-gray-900 dark:text-white uppercase">Tambah Peserta Lomba Baru</h2>
+                                </div>
+                                <form onSubmit={handleAddPeserta} className="grid grid-cols-1 sm:grid-cols-4 gap-3 items-end">
+                                    <div className="sm:col-span-1 space-y-1">
+                                        <span className="text-xs font-bold text-gray-400 uppercase">No Peserta</span>
+                                        <input type="text" placeholder="Contoh: 05" value={newNo} onChange={(e) => setNewNo(e.target.value)} className="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 font-mono focus:outline-none"/>
                                     </div>
-                                ))}
+                                    <div className="sm:col-span-3 space-y-1">
+                                        <span className="text-xs font-bold text-gray-400 uppercase">Nama Lengkap</span>
+                                        <input type="text" placeholder="Nama Peserta Susulan" value={newNama} onChange={(e) => setNewNama(e.target.value)} className="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:outline-none"/>
+                                    </div>
+                                    <div className="sm:col-span-3 space-y-1">
+                                        <span className="text-xs font-bold text-gray-400 uppercase">Link Folder Google Drive Tugas</span>
+                                        <input type="text" placeholder="https://drive.google.com/drive/folders/..." value={newLink} onChange={(e) => setNewLink(e.target.value)} className="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:outline-none"/>
+                                    </div>
+                                    <div className="sm:col-span-1">
+                                        <button type="submit" className="w-full py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider shadow-md transition-colors">Tambah</button>
+                                    </div>
+                                </form>
                             </div>
 
-                            {/* Tombol Panel Aksi */}
-                            <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-gray-100 dark:border-gray-800">
-                                <button type="submit" className="flex-1 brand-red py-3 rounded-xl font-bold shadow-md hover:bg-red-600 transition-colors text-sm uppercase tracking-wider">Simpan Perubahan</button>
-                                <button type="button" onClick={resetAdminSettings} className="px-4 py-3 bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl font-bold text-sm uppercase hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors">Reset Global</button>
-                                <button type="button" onClick={() => setView('dashboard')} className="px-4 py-3 bg-gray-100 dark:bg-gray-800 text-gray-500 rounded-xl font-bold text-sm uppercase hover:bg-gray-200 transition-colors">Batal</button>
+                            {/* List Tabel Peserta yang bisa Dihapus */}
+                            <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
+                                <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+                                    <h3 className="font-bold text-sm text-gray-700 dark:text-gray-300 uppercase tracking-wide">Daftar Manajemen Folder Peserta ({pesertaList.length})</h3>
+                                </div>
+                                <div className="max-h-96 overflow-y-auto divide-y divide-gray-100 dark:divide-gray-800">
+                                    {pesertaList.map((p, idx) => (
+                                        <div key={idx} className="p-4 flex items-center justify-between gap-4 text-sm hover:bg-gray-50 dark:hover:bg-gray-800/40">
+                                            <div className="flex items-center gap-4">
+                                                <span className="font-mono font-bold px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded-md text-gray-900 dark:text-white">{p.no}</span>
+                                                <div>
+                                                    <h4 className="font-semibold text-gray-800 dark:text-gray-200">{p.nama}</h4>
+                                                    <p className="text-xs text-gray-400 truncate max-w-xs sm:max-w-md">{p.link}</p>
+                                                </div>
+                                            </div>
+                                            <button onClick={() => handleDeletePeserta(p.no, p.nama)} className="p-2 text-gray-400 hover:text-red-500 transition-colors" title="Hapus Peserta">
+                                                <IconTrash />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                        </form>
+                        </div>
                     </div>
                 )}
 
-                {/* VIEW: FOLDER PENGUMPULAN */}
+                {/* VIEW: FOLDER PENGUMPULAN & SPREADSHEET DI DALAMNYA */}
                 {view === 'submission' && (
                     <div className="max-w-4xl mx-auto animate-fade-in space-y-12">
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -408,18 +467,34 @@ const App = () => {
                                 </div>
                             </div>
                             
+                            {/* INPUT FILTER CARI & CONTROLLER SORT BY */}
                             <div className="flex flex-wrap items-center gap-3">
+                                {/* BARU: FILTER DROP-DOWN SORT BY */}
+                                <div className="flex items-center gap-1.5 bg-white dark:bg-gray-800 px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700">
+                                    <span className="text-xs font-bold text-gray-400 uppercase">Urutan:</span>
+                                    <select 
+                                        value={sortBy} 
+                                        onChange={(e) => setSortBy(e.target.value)}
+                                        className="text-xs font-bold text-gray-700 dark:text-gray-300 bg-transparent focus:outline-none cursor-pointer"
+                                    >
+                                        <option value="no-asc" className="dark:bg-gray-800">No. Terkecil</option>
+                                        <option value="no-desc" className="dark:bg-gray-800">No. Terbesar</option>
+                                        <option value="name-asc" className="dark:bg-gray-800">Nama (A-Z)</option>
+                                    </select>
+                                </div>
+
                                 <input 
                                     type="text" 
                                     placeholder="Cari No / Nama..." 
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm w-full sm:w-48"
+                                    className="px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm w-full sm:w-40"
                                 />
                                 <a href="#live-monitoring-sheet" className="bg-gray-800 dark:bg-gray-700 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-gray-700 flex items-center gap-2 transition-all"><IconTable /><span>Lihat Live Sheet</span></a>
                             </div>
                         </div>
 
+                        {/* Tabel List Hasil Urutan */}
                         <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left border-collapse">
@@ -431,8 +506,8 @@ const App = () => {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                                        {filteredPeserta.length > 0 ? (
-                                            filteredPeserta.map((peserta, idx) => (
+                                        {processedPesertaTable.length > 0 ? (
+                                            processedPesertaTable.map((peserta, idx) => (
                                                 <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors text-gray-700 dark:text-gray-300">
                                                     <td className="px-6 py-4 text-center font-mono font-bold text-gray-900 dark:text-white bg-gray-50/50 dark:bg-gray-950/20">{peserta.no}</td>
                                                     <td className="px-6 py-4 font-semibold">{peserta.nama}</td>
@@ -453,7 +528,7 @@ const App = () => {
                             </div>
                         </div>
 
-                        {/* LIVE SPREADSHEET IFRAME */}
+                        {/* LIVE MONITORING SHEET */}
                         <div id="live-monitoring-sheet" className="pt-6 border-t border-gray-200 dark:border-gray-800">
                             <div className="flex items-center gap-4 mb-4">
                                 <div className="w-10 h-10 rounded-xl bg-green-500/10 text-green-500 flex items-center justify-center">
