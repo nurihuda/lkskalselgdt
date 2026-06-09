@@ -39,6 +39,7 @@ const IconExternalLink = () => <svg xmlns="http://www.w3.org/2000/svg" width="16
 const IconSettings = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>;
 const IconTrash = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>;
 const IconUserPlus = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>;
+const IconClock = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>;
 
 // 2. MAIN APP COMPONENT
 const App = () => {
@@ -49,8 +50,6 @@ const App = () => {
     const [timerScale, setTimerScale] = useState(1.0);
     const [darkMode, setDarkMode] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
-    
-    // Fitur Sort By state
     const [sortBy, setSortBy] = useState("no-asc");
 
     // State Input Tambah Peserta Baru
@@ -99,7 +98,6 @@ const App = () => {
                 setModules(processedModules);
                 setSchedule(processedSchedule);
 
-                // Sinkronisasi data peserta
                 const savedPeserta = localStorage.getItem('gdt_custom_peserta_list');
                 if (savedPeserta) {
                     setPesertaList(JSON.parse(savedPeserta));
@@ -115,7 +113,7 @@ const App = () => {
             });
     }, []);
 
-    // Real-time Clock
+    // Real-time Clock dengan Injeksi Offset Admin
     useEffect(() => {
         const timer = setInterval(() => {
             const baseTime = new Date();
@@ -225,6 +223,15 @@ const App = () => {
         }
     };
 
+    // Format String Waktu Sekarang untuk Display Web
+    const liveTimeString = useMemo(() => {
+        return currentTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + " WITA";
+    }, [currentTime]);
+
+    const liveFullDateString = useMemo(() => {
+        return currentTime.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    }, [currentTime]);
+
     // Logic Event Timer
     const { activeEvent, nextEvent } = useMemo(() => {
         let active = null;
@@ -252,7 +259,7 @@ const App = () => {
 
     const pad = (num) => String(num).padStart(2, '0');
 
-    // Mengolah Filter Pencarian DAN Fitur Urutan Sort By Sekaligus
+    // Mengolah Filter Pencarian DAN Fitur Urutan Sort By
     const processedPesertaTable = useMemo(() => {
         let result = pesertaList.filter(p => 
             p.nama.toLowerCase().includes(searchQuery.toLowerCase()) || p.no.includes(searchQuery)
@@ -282,6 +289,12 @@ const App = () => {
                     </div>
                     
                     <div className="flex items-center gap-3">
+                        {/* BARU: JAM DIGITAL MINI DI HEADER */}
+                        <div className="hidden sm:flex items-center gap-1.5 bg-white bg-opacity-15 text-white font-mono font-bold px-3 py-1.5 rounded-xl text-xs border border-white border-opacity-10 shadow-sm mr-1">
+                            <IconClock />
+                            <span>{liveTimeString}</span>
+                        </div>
+
                         <button onClick={toggleDarkMode} className="p-2.5 bg-white bg-opacity-10 hover:bg-opacity-20 text-white rounded-xl transition-all border border-white border-opacity-10">
                             {darkMode ? <IconSun /> : <IconMoon />}
                         </button>
@@ -300,7 +313,7 @@ const App = () => {
                     <div className="text-center mb-8">
                         <h1 className="text-2xl sm:text-4xl font-black tracking-wider uppercase text-gray-800 dark:text-white">{config.headline || "Portal Utama"}</h1>
                         {timeOffset !== 0 && (
-                            <span className="inline-block mt-2 bg-amber-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase animate-pulse">Kontrol Waktu Admin Aktif (Kompensasi: {timeOffset} Menit)</span>
+                            <span className="inline-block mt-2 bg-amber-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase animate-pulse">Kontrol Waktu Admin Jam Aktif (Kompensasi: {timeOffset} Menit)</span>
                         )}
                     </div>
                 )}
@@ -308,6 +321,14 @@ const App = () => {
                 {/* VIEW: DASHBOARD */}
                 {view === 'dashboard' && (
                     <div className="space-y-12 animate-fade-in">
+                        
+                        {/* BARU: DISPLAY WAKTU SEKARANG RAKSASA DI DASHBOARD UTAMA */}
+                        <div className="text-center max-w-xl mx-auto bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-md rounded-2xl py-4 px-6 flex flex-col items-center justify-center gap-1">
+                            <span className="text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1"><IconClock /> Waktu Sekarang</span>
+                            <h2 className="text-2xl sm:text-3xl font-black text-gray-800 dark:text-white font-mono tracking-wide">{liveTimeString}</h2>
+                            <p className="text-xs font-semibold text-gray-400">{liveFullDateString}</p>
+                        </div>
+
                         {/* KOTAK TIMER */}
                         <div ref={timerRef} className={`bg-white dark:bg-gray-900 shadow-xl max-w-4xl mx-auto text-center border border-gray-100 dark:border-gray-800 relative transition-all duration-300 ${isFullscreen ? 'flex flex-col items-center justify-center w-full h-full p-12 m-0 max-w-none rounded-none' : 'rounded-3xl p-8'}`}>
                             <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-gray-50 dark:bg-gray-800 p-1 rounded-xl border border-gray-200 dark:border-gray-700 z-10">
@@ -372,7 +393,6 @@ const App = () => {
                 {/* VIEW: CONTROL PANEL RAHASIA ADMIN */}
                 {view === 'admin' && (
                     <div className="max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fade-in">
-                        {/* Lajur Kiri: Setting Jam & Modul */}
                         <div className="lg:col-span-1 bg-white dark:bg-gray-900 p-6 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-800 h-fit">
                             <div className="flex items-center gap-3 border-b border-gray-100 dark:border-gray-800 pb-3 mb-5">
                                 <div className="text-brand-red"><IconSettings /></div>
@@ -399,7 +419,6 @@ const App = () => {
                             </form>
                         </div>
 
-                        {/* Lajur Kanan: Ruang Tambah & Hapus Folder Peserta */}
                         <div className="lg:col-span-2 space-y-6">
                             <div className="bg-white dark:bg-gray-900 p-6 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-800">
                                 <div className="flex items-center gap-3 border-b border-gray-100 dark:border-gray-800 pb-3 mb-4">
@@ -450,7 +469,7 @@ const App = () => {
                     </div>
                 )}
 
-                {/* VIEW: FOLDER PENGUMPULAN & SPREADSHEET DI DALAMNYA */}
+                {/* VIEW: FOLDER PENGUMPULAN & SPREADSHEET */}
                 {view === 'submission' && (
                     <div className="max-w-4xl mx-auto animate-fade-in space-y-12">
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -462,33 +481,21 @@ const App = () => {
                                 </div>
                             </div>
                             
-                            {/* INPUT FILTER CARI & CONTROLLER SORT BY */}
                             <div className="flex flex-wrap items-center gap-3">
                                 <div className="flex items-center gap-1.5 bg-white dark:bg-gray-800 px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700">
                                     <span className="text-xs font-bold text-gray-400 uppercase">Urutan:</span>
-                                    <select 
-                                        value={sortBy} 
-                                        onChange={(e) => setSortBy(e.target.value)}
-                                        className="text-xs font-bold text-gray-700 dark:text-gray-300 bg-transparent focus:outline-none cursor-pointer"
-                                    >
+                                    <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="text-xs font-bold text-gray-700 dark:text-gray-300 bg-transparent focus:outline-none cursor-pointer">
                                         <option value="no-asc" className="dark:bg-gray-800">No. Terkecil</option>
                                         <option value="no-desc" className="dark:bg-gray-800">No. Terbesar</option>
                                         <option value="name-asc" className="dark:bg-gray-800">Nama (A-Z)</option>
                                     </select>
                                 </div>
 
-                                <input 
-                                    type="text" 
-                                    placeholder="Cari No / Nama..." 
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm w-full sm:w-40"
-                                />
+                                <input type="text" placeholder="Cari No / Nama..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm w-full sm:w-40"/>
                                 <a href="#live-monitoring-sheet" className="bg-gray-800 dark:bg-gray-700 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-gray-700 flex items-center gap-2 transition-all"><IconTable /><span>Lihat Live Sheet</span></a>
                             </div>
                         </div>
 
-                        {/* Tabel List Hasil Urutan */}
                         <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left border-collapse">
@@ -522,7 +529,6 @@ const App = () => {
                             </div>
                         </div>
 
-                        {/* LIVE MONITORING SHEET */}
                         <div id="live-monitoring-sheet" className="pt-6 border-t border-gray-200 dark:border-gray-800">
                             <div className="flex items-center gap-4 mb-4">
                                 <div className="w-10 h-10 rounded-xl bg-green-500/10 text-green-500 flex items-center justify-center">
