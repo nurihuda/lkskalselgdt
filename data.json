@@ -15,21 +15,21 @@
     {
       "id": 2,
       "title": "Modul 2",
-      "releaseTime": "2026-06-10T07:30:00",
+      "releaseTime": "2026-06-10T08:30:00",
       "link": "https://drive.google.com/drive/folders/1mU8hxj2lzwycteF2sByHcxsi05L_bsXp?usp=drive_link",
       "pic": "Juri"
     },
     {
       "id": 3,
       "title": "Modul 3",
-      "releaseTime": "2026-06-10T12:15:00",
+      "releaseTime": "2026-06-10T13:30:00",
       "link": "https://drive.google.com/drive/folders/1deWbW8ZlTsDBZ8w8j6MzYewAlV91Ijdc?usp=drive_link",
       "pic": "Juri"
     },
     {
       "id": 4,
       "title": "Modul 4",
-      "releaseTime": "2026-06-11T07:15:00",
+      "releaseTime": "2026-06-11T08:15:00",
       "link": "https://drive.google.com/drive/folders/1wwTOa51NJBgBBgrDb317DrFcgrGzc6ww?usp=drive_link",
       "pic": "Juri"
     }
@@ -69,18 +69,18 @@
     },
     {
       "id": 5,
-      "title": "Pengerjaan Modul 1",
+      "title": "Pengerjaan Modul 1 & Sharing Pembimbing",
       "start": "2026-06-09T14:00:00",
-      "end": "2026-06-09T17:00:00",
-      "duration": "3 Jam",
+      "end": "2026-06-09T16:45:00",
+      "duration": "2 Jam 45 Menit",
       "pic": "Peserta"
     },
     {
       "id": 6,
       "title": "Pengumpulan Modul 1",
-      "start": "2026-06-09T17:00:00",
+      "start": "2026-06-09T16:45:00",
       "end": "2026-06-09T17:15:00",
-      "duration": "15 Menit",
+      "duration": "30 Menit",
       "pic": "Peserta & Juri"
     },
     {
@@ -102,152 +102,152 @@
     {
       "id": 9,
       "title": "Registrasi, Persiapan",
-      "start": "2026-06-10T07:15:00",
-      "end": "2026-06-10T07:30:00",
+      "start": "2026-06-10T08:15:00",
+      "end": "2026-06-10T08:30:00",
       "duration": "15 Menit",
       "pic": "Panitia"
     },
     {
       "id": 10,
       "title": "Briefing & Tanya Jawab Modul 2",
-      "start": "2026-06-10T07:30:00",
-      "end": "2026-06-10T08:00:00",
+      "start": "2026-06-10T08:30:00",
+      "end": "2026-06-10T09:00:00",
       "duration": "30 Menit",
       "pic": "Juri"
     },
     {
       "id": 11,
-      "title": "Pengerjaan Modul 2 & Sharing Pembimbing",
-      "start": "2026-06-10T08:00:00",
-      "end": "2026-06-10T10:45:00",
-      "duration": "2 Jam 45 Menit",
+      "title": "Pengerjaan Modul 2",
+      "start": "2026-06-10T09:00:00",
+      "end": "2026-06-10T12:00:00",
+      "duration": "3 Jam",
       "pic": "Peserta"
     },
     {
       "id": 12,
       "title": "Pengumpulan Modul 2",
-      "start": "2026-06-10T10:45:00",
-      "end": "2026-06-10T11:15:00",
-      "duration": "30 Menit",
+      "start": "2026-06-10T12:00:00",
+      "end": "2026-06-10T12:15:00",
+      "duration": "15 Menit",
       "pic": "Peserta & Juri"
     },
     {
       "id": 13,
       "title": "ISHOMA",
-      "start": "2026-06-10T11:15:00",
-      "end": "2026-06-10T12:15:00",
-      "duration": "1 Jam",
+      "start": "2026-06-10T12:15:00",
+      "end": "2026-06-10T13:30:00",
+      "duration": "1 Jam 15 Menit",
       "pic": "-"
     },
     {
       "id": 14,
       "title": "Briefing & Tanya Jawab Modul 3",
-      "start": "2026-06-10T12:15:00",
-      "end": "2026-06-10T12:45:00",
+      "start": "2026-06-10T13:30:00",
+      "end": "2026-06-10T14:00:00",
       "duration": "30 Menit",
       "pic": "Juri"
     },
     {
       "id": 15,
       "title": "Pengerjaan Modul 3",
-      "start": "2026-06-10T12:45:00",
-      "end": "2026-06-10T15:30:00",
-      "duration": "2 Jam 45 Menit",
+      "start": "2026-06-10T14:00:00",
+      "end": "2026-06-10T17:00:00",
+      "duration": "3 Jam",
       "pic": "Peserta"
     },
     {
       "id": 16,
       "title": "Pengumpulan Modul 3",
-      "start": "2026-06-10T15:30:00",
-      "end": "2026-06-10T16:00:00",
-      "duration": "30 Menit",
+      "start": "2026-06-10T17:00:00",
+      "end": "2026-06-10T17:15:00",
+      "duration": "15 Menit",
       "pic": "Peserta & Juri"
     },
     {
       "id": 17,
       "title": "Peserta pulang",
-      "start": "2026-06-10T16:00:00",
-      "end": "2026-06-10T16:30:00",
+      "start": "2026-06-10T17:15:00",
+      "end": "2026-06-10T17:45:00",
       "duration": "30 Menit",
       "pic": "-"
     },
     {
       "id": 18,
       "title": "Penilaian / Marking",
-      "start": "2026-06-10T16:30:00",
-      "end": "2026-06-10T19:00:00",
+      "start": "2026-06-10T17:45:00",
+      "end": "2026-06-10T20:15:00",
       "duration": "2 Jam 30 Menit",
       "pic": "Juri"
     },
     {
       "id": 19,
       "title": "Registrasi, Persiapan",
-      "start": "2026-06-11T07:00:00",
-      "end": "2026-06-11T07:15:00",
+      "start": "2026-06-11T08:00:00",
+      "end": "2026-06-11T08:15:00",
       "duration": "15 Menit",
       "pic": "Panitia"
     },
     {
       "id": 20,
       "title": "Briefing & Tanya Jawab Modul 4",
-      "start": "2026-06-11T07:15:00",
-      "end": "2026-06-11T07:45:00",
+      "start": "2026-06-11T08:15:00",
+      "end": "2026-06-11T08:45:00",
       "duration": "30 Menit",
       "pic": "Juri"
     },
     {
       "id": 21,
       "title": "Pengerjaan Modul 4",
-      "start": "2026-06-11T07:45:00",
-      "end": "2026-06-11T10:30:00",
-      "duration": "2 Jam 45 Menit",
+      "start": "2026-06-11T08:45:00",
+      "end": "2026-06-11T11:45:00",
+      "duration": "3 Jam",
       "pic": "Peserta"
     },
     {
       "id": 22,
       "title": "Pengumpulan Modul 4",
-      "start": "2026-06-11T10:30:00",
-      "end": "2026-06-11T11:00:00",
-      "duration": "30 Menit",
+      "start": "2026-06-11T11:45:00",
+      "end": "2026-06-11T12:00:00",
+      "duration": "15 Menit",
       "pic": "Peserta & Juri"
     },
     {
       "id": 23,
       "title": "Sharing bersama Peserta",
-      "start": "2026-06-11T11:00:00",
-      "end": "2026-06-11T11:20:00",
+      "start": "2026-06-11T12:00:00",
+      "end": "2026-06-11T12:20:00",
       "duration": "20 Menit",
       "pic": "-"
     },
     {
       "id": 24,
       "title": "ISHOMA",
-      "start": "2026-06-11T11:20:00",
-      "end": "2026-06-11T12:20:00",
+      "start": "2026-06-11T12:20:00",
+      "end": "2026-06-11T13:20:00",
       "duration": "1 Jam",
       "pic": "-"
     },
     {
       "id": 25,
       "title": "Penilaian / Marking",
-      "start": "2026-06-11T12:20:00",
-      "end": "2026-06-11T13:50:00",
+      "start": "2026-06-11T13:20:00",
+      "end": "2026-06-11T14:50:00",
       "duration": "1 Jam 30 Menit",
       "pic": "Juri"
     },
     {
       "id": 26,
       "title": "Pengumuman & Penutupan",
-      "start": "2026-06-11T13:50:00",
-      "end": "2026-06-11T14:05:00",
+      "start": "2026-06-11T14:50:00",
+      "end": "2026-06-11T15:05:00",
       "duration": "15 Menit",
       "pic": "Panitia"
     },
     {
       "id": 27,
       "title": "Loading out alat",
-      "start": "2026-06-11T14:05:00",
-      "end": "2026-06-11T17:05:00",
+      "start": "2026-06-11T15:05:00",
+      "end": "2026-06-11T18:05:00",
       "duration": "3 Jam",
       "pic": "Panitia/Peserta"
     }
