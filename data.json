@@ -158,23 +158,23 @@
     {
       "id": 15,
       "title": "Pengerjaan Modul 3",
-      "start": "2026-06-10T14:00:00",
-      "end": "2026-06-10T17:00:00",
+      "start": "2026-06-10T14:15:00",
+      "end": "2026-06-10T17:15:00",
       "duration": "3 Jam",
       "pic": "Peserta"
     },
     {
       "id": 16,
       "title": "Pengumpulan Modul 3",
-      "start": "2026-06-10T17:00:00",
-      "end": "2026-06-10T17:15:00",
+      "start": "2026-06-10T17:15:00",
+      "end": "2026-06-10T17:30:00",
       "duration": "15 Menit",
       "pic": "Peserta & Juri"
     },
     {
       "id": 17,
       "title": "Peserta pulang",
-      "start": "2026-06-10T17:15:00",
+      "start": "2026-06-10T17:30:00",
       "end": "2026-06-10T17:45:00",
       "duration": "30 Menit",
       "pic": "-"
