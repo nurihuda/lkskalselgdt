@@ -111,7 +111,7 @@
       "id": 10,
       "title": "Briefing & Tanya Jawab Modul 2",
       "start": "2026-06-10T08:30:00",
-      "end": "2026-06-10T09:50:00",
+      "end": "2026-06-10T09:05:00",
       "duration": "35 Menit",
       "pic": "Juri"
     },
@@ -122,6 +122,14 @@
       "end": "2026-06-10T12:05:00",
       "duration": "3 Jam",
       "pic": "Peserta"
+    },
+    {
+      "id": 11,
+      "title": "Diskusi Dengan Pembimbing",
+      "start": "2026-06-10T10:00:00",
+      "end": "2026-06-10T11:30:00",
+      "duration": "1 Jam 30 Menit",
+      "pic": "Juri"
     },
     {
       "id": 12,
