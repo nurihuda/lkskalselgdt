@@ -111,23 +111,23 @@
       "id": 10,
       "title": "Briefing & Tanya Jawab Modul 2",
       "start": "2026-06-10T08:30:00",
-      "end": "2026-06-10T09:00:00",
-      "duration": "30 Menit",
+      "end": "2026-06-10T09:50:00",
+      "duration": "35 Menit",
       "pic": "Juri"
     },
     {
       "id": 11,
       "title": "Pengerjaan Modul 2",
-      "start": "2026-06-10T09:00:00",
-      "end": "2026-06-10T12:00:00",
+      "start": "2026-06-10T09:05:00",
+      "end": "2026-06-10T12:05:00",
       "duration": "3 Jam",
       "pic": "Peserta"
     },
     {
       "id": 12,
       "title": "Pengumpulan Modul 2",
-      "start": "2026-06-10T12:00:00",
-      "end": "2026-06-10T12:15:00",
+      "start": "2026-06-10T12:05:00",
+      "end": "2026-06-10T12:20:00",
       "duration": "15 Menit",
       "pic": "Peserta & Juri"
     },
@@ -136,7 +136,7 @@
       "title": "ISHOMA",
       "start": "2026-06-10T12:15:00",
       "end": "2026-06-10T13:30:00",
-      "duration": "1 Jam 15 Menit",
+      "duration": "1 Jam 10 Menit",
       "pic": "-"
     },
     {
