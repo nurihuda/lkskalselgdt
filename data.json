@@ -206,25 +206,25 @@
     {
       "id": 21,
       "title": "Pengerjaan Modul 4",
-      "start": "2026-06-11T08:45:00",
-      "end": "2026-06-11T11:45:00",
+      "start": "2026-06-11T08:35:00",
+      "end": "2026-06-11T11:35:00",
       "duration": "3 Jam",
       "pic": "Peserta"
     },
     {
       "id": 22,
       "title": "Pengumpulan Modul 4",
-      "start": "2026-06-11T11:45:00",
-      "end": "2026-06-11T12:00:00",
+      "start": "2026-06-11T11:35:00",
+      "end": "2026-06-11T11:50:00",
       "duration": "15 Menit",
       "pic": "Peserta & Juri"
     },
     {
       "id": 23,
-      "title": "Sharing bersama Peserta",
-      "start": "2026-06-11T12:00:00",
+      "title": "Closing Session",
+      "start": "2026-06-11T11:50:00",
       "end": "2026-06-11T12:20:00",
-      "duration": "20 Menit",
+      "duration": "30 Menit",
       "pic": "-"
     },
     {
